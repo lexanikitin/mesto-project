@@ -2,6 +2,9 @@
   margin: 0;
   padding: 0;
   width: 282px;
+  height: 282px;
   grid-column-start: 1;
   grid-column-end: end;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
 }

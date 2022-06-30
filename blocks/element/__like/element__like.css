@@ -2,14 +2,15 @@
   background-image: url("../../../images/like.svg");
   width: 22px;
   height: 19px;
-  display: inline-block;
   transition: opacity .3s ease-in-out;
   margin-top: 5px;
+  border: 0;
+  background-color: transparent;
 }
-.element__checkbox:hover+.element__like {
+.element__like:hover{
   opacity: .5;
 }
-.element__checkbox:checked+.element__like {
+.element__like:active{
   background-image: url("../../../images/like-active.svg");
   opacity: 1;
 }

@@ -7,95 +7,73 @@
   <link rel="stylesheet" href="pages/index.css">
 </head>
 <body class="page">
-<header class="header">
-  <img src="./images/mesto-logo.svg" alt="Логотип Mesto" class="header__logo">
-  <hr class="header__line">
-</header>
-<main class="content">
-  <section class="profile">
-    <img src="./images/avatar.png" alt="Аватар пользователя" class="profile__avatar">
-    <div class="profile__info">
-      <h1 class="profile__name">Жак-Ив Кусто</h1>
-      <button class="profile__edit-button"></button>
-      <p class="profile__subtitle">Исследователь океана</p>
+  <header class="header">
+    <img src="./images/mesto-logo.svg" alt="Логотип Mesto" class="header__logo">
+  </header>
+  <main class="content">
+    <section class="profile">
+      <img src="./images/avatar.png" alt="Аватар пользователя" class="profile__avatar">
+      <div class="profile__info">
+        <h1 class="profile__name">Жак-Ив Кусто</h1>
+        <button type="button" class="profile__edit-button"></button>
+        <p class="profile__subtitle">Исследователь океана</p>
+      </div>
+      <button type="button" class="profile__add-button"></button>
+    </section>
+    <section class="elements-section">
+      <ul class="elements">
+        <li class="element">
+          <img src="./images/carachaevsk.png" alt="Фотография" class="element__image">
+          <h2 class="element__heading">Карачаевск</h2>
+          <button class="element__like" type="button"></button>
+        </li>
+        <li class="element">
+          <img src="./images/elbrus.png" alt="Фотография" class="element__image">
+          <h2 class="element__heading">Гора Эльбрус</h2>
+          <button class="element__like" type="button"></button>
+        </li>
+        <li class="element">
+          <img src="./images/dombay.png" alt="Фотография" class="element__image">
+          <h2 class="element__heading">Домбай</h2>
+          <button class="element__like" type="button"></button>
+        </li>
+        <li class="element">
+          <img src="./images/elbrus2.png" alt="Фотография" class="element__image">
+          <h2 class="element__heading">Гора Эльбрус</h2>
+          <button class="element__like" type="button"></button>
+        </li>
+        <li class="element">
+          <img src="./images/dombay2.png" alt="Фотография" class="element__image">
+          <h2 class="element__heading">Домбай</h2>
+          <button class="element__like" type="button"></button>
+        </li>
+        <li class="element">
+          <img src="./images/carachaevo-cherkessk.png" alt="Фотография" class="element__image">
+          <h2 class="element__heading">Карачаево-Черкесская Республика</h2>
+          <button class="element__like" type="button"></button>
+        </li>
+      </ul>
+    </section>
+    <div class="popup form_opened">
+      <div class="popup__container">
+        <form action="" method="post" class="form" name="edit">
+          <h2 class="form__title">Редактировать профиль</h2>
+          <label>
+            <input class="form__input" type="text" name="name" id="name" placeholder="Имя" value="Жак-Ив Кусто"
+                   required>
+          </label>
+          <label>
+            <input class="form__input" type="text" name="subtitle" id="subtitle" placeholder="Описание"
+                   value="Исследователь океана" required>
+          </label>
+          <button class="form__submit" type="submit">Сохранить</button>
+        </form>
+        <button type="button" class="form__close"></button>
+      </div>
     </div>
-    <button class="profile__add-button"></button>
-  </section>
-  <section>
-    <ul class="elements">
-      <li class="element">
-        <img src="./images/carachaevsk.png" alt="Фотография" class="element__image">
-        <h2 class="element__heading">Карачаевск</h2>
-        <label class="element__label">
-          <input type="checkbox" name="like" id="like1" class="element__checkbox">
-          <span class="element__like"></span>
-        </label>
-      </li>
-      <li class="element">
-        <img src="./images/elbrus.png" alt="Фотография" class="element__image">
-        <h2 class="element__heading">Гора Эльбрус</h2>
-        <label class="element__label">
-          <input type="checkbox" name="like" id="like2" class="element__checkbox">
-          <span class="element__like"></span>
-        </label>
-      </li>
-      <li class="element">
-        <img src="./images/dombay.png" alt="Фотография" class="element__image">
-        <h2 class="element__heading">Домбай</h2>
-        <label class="element__label">
-          <input type="checkbox" name="like" id="like3" class="element__checkbox">
-          <span class="element__like"></span>
-        </label>
-      </li>
-      <li class="element">
-        <img src="./images/elbrus2.png" alt="Фотография" class="element__image">
-        <h2 class="element__heading">Гора Эльбрус</h2>
-        <label class="element__label">
-          <input type="checkbox" name="like" id="like4" class="element__checkbox">
-          <span class="element__like"></span>
-        </label>
-      </li>
-      <li class="element">
-        <img src="./images/dombay2.png" alt="Фотография" class="element__image">
-        <h2 class="element__heading">Домбай</h2>
-        <label class="element__label">
-          <input type="checkbox" name="like" id="like5" class="element__checkbox">
-          <span class="element__like"></span>
-        </label>
-      </li>
-      <li class="element">
-        <img src="./images/carachaevo-cherkessk.png" alt="Фотография" class="element__image">
-        <h2 class="element__heading">Карачаево-Черкесская Республика</h2>
-        <label class="element__label">
-          <input type="checkbox" name="like" id="like6" class="element__checkbox">
-          <span class="element__like"></span>
-        </label>
-      </li>
-    </ul>
-  </section>
-  <form action="" method="post" class="form ">
-    <div class="form__wrapper">
-      <h2 class="form__title">Редактировать профиль</h2>
-      <label>
-        <input class="form__input" type="text" name="name" id="name" placeholder="Имя" value="Жак-Ив Кусто">
-      </label>
-      <label>
-        <input class="form__input" type="text" name="subtitle" id="subtitle" placeholder="Описание" value="Исследователь океана">
-      </label>
-      <button class="form__submit" type="submit">Сохранить</button>
-      <button class="form__close"></button>
-    </div>
-  </form>
-</main>
-<footer class="footer">
-  <p class="footer__copyright"> &copy; 2022 Mesto Russia</p>
-</footer>
-<script>
-  var editBtn = document.querySelector('.profile__edit-button');
-  var form = document.querySelector('.form');
-  editBtn.onclick = function (){
-    form.classList.toggle("form_opened");
-  }
-</script>
+  </main>
+  <footer class="footer">
+    <p class="footer__copyright"> &copy; 2022 Mesto Russia</p>
+  </footer>
 </body>
 </html>
