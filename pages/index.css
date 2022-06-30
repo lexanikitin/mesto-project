@@ -33,6 +33,15 @@
 @import url(../blocks/element/__checkbox/element__checkbox.css);
 @import url(../blocks/element/__label/element__label.css);
 /*
+ form
+*/
+@import url(../blocks/form/form.css);
+@import url(../blocks/form/__wrapper/form__wrapper.css);
+@import url(../blocks/form/__title/form__title.css);
+@import url(../blocks/form/__input/form__input.css);
+@import url(../blocks/form/__submit/form__submit.css);
+@import url(../blocks/form/__close/form__close.css);
+/*
  footer
 */
 @import url(../blocks/footer/footer.css);

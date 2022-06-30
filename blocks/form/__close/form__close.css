@@ -1,0 +1,19 @@
+.form__close{
+  position: absolute;
+  background-image: url("../../../images/form-close.svg");
+  width: 32px;
+  height: 32px;
+  background-size: auto;
+  background-color: transparent;
+  color: #FFFFFF;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  right: -40px;
+  top: -40px;
+  cursor: pointer;
+  transition: opacity .3s ease-in-out;
+}
+.form__close:hover{
+  opacity: .6;
+}
