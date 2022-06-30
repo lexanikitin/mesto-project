@@ -15,5 +15,7 @@
     grid-template-columns: auto;
     row-gap: 26px;
     justify-items: center;
+    padding-bottom: 36px;
+
   }
 }
