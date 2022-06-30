@@ -1,0 +1,18 @@
+.profile{
+  padding: 0;
+  padding-bottom: 50px;
+  margin: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  color: white;
+  display: grid;
+  grid-template-columns: 120px auto 150px;
+  column-gap: 30px;
+  align-items: center;
+}
+@media (max-width: 767px) {
+  .profile{
+    grid-template-columns: auto;
+    row-gap: 26px;
+    justify-items: center;
+  }
+}

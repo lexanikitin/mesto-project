@@ -1,0 +1,16 @@
+.element__like {
+  background-image: url("../../../images/like.svg");
+  width: 22px;
+  height: 19px;
+  display: inline-block;
+  transition: opacity .3s ease-in-out;
+  margin-top: 5px;
+}
+.element__checkbox:hover+.element__like {
+  opacity: .5;
+}
+.element__checkbox:checked+.element__like {
+  background-image: url("../../../images/like-active.svg");
+  opacity: 1;
+}
+

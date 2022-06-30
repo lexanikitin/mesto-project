@@ -1,0 +1,12 @@
+.element{
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  border-radius: 10px;
+  position: relative;
+  width: 282px;
+  height: 362px;
+  display: grid;
+  grid-template-columns: 230px auto;
+  grid-template-rows: auto auto;
+}
