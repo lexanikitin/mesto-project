@@ -1,17 +1,14 @@
-# Проект: Место
+# Проект: Mesto
 
-### Обзор
+### 15 Когорта Web+
 
-* Figma
-* Картинки
 
-**Figma**
+**Автор**
 
-* [Ссылка на макет в Figma](https://www.figma.com/file/2cn9N9jSkmxD84oJik7xL7/JavaScript.-Sprint-4?node-id=0%3A1)
+Никитин Алексей
 
-**Картинки**
+**Ссылки**
 
-Доставать картинки предстоит из Фигмы. Это расхожая практика, поэтому полезно потренироваться.
-Не забудьте [оптимизировать картинки](https://tinypng.com/), чтобы ваш сайт загружался быстрее.
+[Репозиторий на GitHub](https://github.com/lexanikitin/mesto-project)
 
-Удачи!
+[Страничка на GitHub Pages](https://lexanikitin.github.io/mesto-project/)
