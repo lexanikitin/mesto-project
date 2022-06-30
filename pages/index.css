@@ -41,6 +41,8 @@
 @import url(../blocks/form/__input/form__input.css);
 @import url(../blocks/form/__submit/form__submit.css);
 @import url(../blocks/form/__close/form__close.css);
+@import url(../blocks/form/_opened/form_opened.css);
+
 /*
  footer
 */

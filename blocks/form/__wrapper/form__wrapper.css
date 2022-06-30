@@ -13,3 +13,8 @@
   box-sizing: border-box;
   position: relative;
 }
+@media (max-width: 767px) {
+  .form__wrapper{
+    padding: 25px 22px;
+  }
+}

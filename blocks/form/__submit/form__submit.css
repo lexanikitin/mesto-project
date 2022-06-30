@@ -17,3 +17,10 @@
 .form__submit:hover {
   opacity: .8;
 }
+
+@media (max-width: 767px) {
+  .form__submit {
+    font-size: 14px;
+    line-height: 17px;
+  }
+}

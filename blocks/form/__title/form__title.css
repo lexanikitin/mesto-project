@@ -7,3 +7,9 @@
   padding: 0;
   padding-bottom: 24px;
 }
+@media (max-width: 767px) {
+  .form__title{
+    font-size: 18px;
+    line-height: 22px;
+  }
+}
