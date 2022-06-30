@@ -15,10 +15,10 @@
       <img src="./images/avatar.png" alt="Аватар пользователя" class="profile__avatar">
       <div class="profile__info">
         <h1 class="profile__name">Жак-Ив Кусто</h1>
-        <button type="button" class="profile__edit-button"></button>
+        <button aria-label="Изменить" type="button" class="profile__edit-button"></button>
         <p class="profile__subtitle">Исследователь океана</p>
       </div>
-      <button type="button" class="profile__add-button"></button>
+      <button aria-label="Добавить" type="button" class="profile__add-button"></button>
     </section>
     <section class="elements-section">
       <ul class="elements">
@@ -54,9 +54,9 @@
         </li>
       </ul>
     </section>
-    <div class="popup form_opened">
+    <div class="popup popup_opened">
       <div class="popup__container">
-        <form action="" method="post" class="form" name="edit">
+        <form action="#" method="post" class="form" name="edit">
           <h2 class="form__title">Редактировать профиль</h2>
           <label>
             <input class="form__input" type="text" name="name" id="name" placeholder="Имя" value="Жак-Ив Кусто"
@@ -68,7 +68,7 @@
           </label>
           <button class="form__submit" type="submit">Сохранить</button>
         </form>
-        <button type="button" class="form__close"></button>
+        <button aria-label="Закрыть" type="button" class="popup__close"></button>
       </div>
     </div>
   </main>

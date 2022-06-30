@@ -1,4 +1,4 @@
-.form__close{
+.popup__close{
   position: absolute;
   background-image: url("../../../images/form-close.svg");
   width: 32px;
@@ -14,11 +14,11 @@
   cursor: pointer;
   transition: opacity .3s ease-in-out;
 }
-.form__close:hover{
+.popup__close:hover{
   opacity: .6;
 }
 @media (max-width: 767px) {
-  .form__close{
+  .popup__close{
     right: 0;
     top: -26px;
 
