@@ -64,6 +64,7 @@ function formProfileSubmitHandler(evt) {
   profileSubtitle.textContent = profilePopupSubtitle.value;
   closePopup(profilePopup);
 }
+
 // обработчик сохранения формы нового элемента
 function formElementSubmitHandler(evt) {
   evt.preventDefault();
@@ -82,6 +83,7 @@ function getElement(name, link) {
   elementImage.src = link;
   elementImage.alt = name;
   elementTitle.textContent = name;
+  elementLike.addEventListener('click', toggleLike);
 
   return element;
 }
@@ -92,6 +94,7 @@ function createElement(name, link) {
   elementContainer.prepend(element);
 }
 
+// обработчик события лайка
 function toggleLike(evt) {
   evt.target.classList.toggle('element__like_active');
 }
