@@ -18,6 +18,11 @@ const elementPopupLink = document.querySelector('#element-link');
 
 const newElementBtn = document.querySelector('.profile__add-button');
 
+const imagePopup = document.querySelector('.popup-image');
+const imagePopupImg = imagePopup.querySelector('.popup__image');
+const imagePopupName =  imagePopup.querySelector('.popup__image-name');
+
+
 const initialCards = [
   {
     name: 'Архыз',
@@ -73,6 +78,18 @@ function formElementSubmitHandler(evt) {
   evt.target.reset();
 }
 
+function OpenImage(evt){
+  const targetElement = evt.target.closest('.element');
+  const targetImage = targetElement.querySelector('.element__image');
+  const targetName = targetElement.querySelector('.element__heading');
+
+  imagePopupImg.src = targetImage.src;
+  imagePopupImg.alt = targetImage.alt;
+  imagePopupName.textContent = targetName.textContent;
+
+  openPopup(imagePopup);
+}
+
 // генерация элемента из шаблона и наполнение
 function getElement(name, link) {
   const element = elementTemplate.querySelector('.element').cloneNode(true);
@@ -86,6 +103,7 @@ function getElement(name, link) {
   elementTitle.textContent = name;
   elementLike.addEventListener('click', toggleLike);
   elementDelete.addEventListener('click', destroyElement)
+  elementImage.addEventListener('click', OpenImage)
 
   return element;
 }

@@ -43,6 +43,9 @@
 @import url(../blocks/form/__submit/form__submit.css);
 @import url(../blocks/popup/__close/popup__close.css);
 @import url(../blocks/popup/_opened/popup_opened.css);
+@import url(../blocks/popup/__image/popup__image.css);
+@import url(../blocks/popup/__image-container/popup__image-container.css);
+@import url(../blocks/popup/__image-name/popup__image-name.css);
 
 /*
  footer
