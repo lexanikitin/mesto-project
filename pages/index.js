@@ -79,11 +79,13 @@ function getElement(name, link) {
   const elementImage = element.querySelector('.element__image');
   const elementTitle = element.querySelector('.element__heading');
   const elementLike = element.querySelector('.element__like');
+  const elementDelete = element.querySelector('.element__delete');
 
   elementImage.src = link;
   elementImage.alt = name;
   elementTitle.textContent = name;
   elementLike.addEventListener('click', toggleLike);
+  elementDelete.addEventListener('click', destroyElement)
 
   return element;
 }
@@ -92,6 +94,10 @@ function getElement(name, link) {
 function createElement(name, link) {
   const element = getElement(name, link);
   elementContainer.prepend(element);
+}
+// удаление элемента
+function destroyElement(evt){
+  evt.target.closest('.element').remove();
 }
 
 // обработчик события лайка

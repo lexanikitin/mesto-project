@@ -31,6 +31,7 @@
 @import url(../blocks/element/__heading/element__heading.css);
 @import url(../blocks/element/__like/element__like.css);
 @import url(../blocks/element/__like/_active/element__like_active.css);
+@import url(../blocks/element/__delete/element__delete.css);
 /*
  form
 */
