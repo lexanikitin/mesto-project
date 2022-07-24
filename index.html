@@ -22,39 +22,16 @@
     </section>
     <section class="elements-section">
       <ul class="elements">
-        <li class="element">
-          <img src="./images/carachaevsk.png" alt="Фотография" class="element__image">
-          <h2 class="element__heading">Карачаевск</h2>
-          <button class="element__like" type="button"></button>
-        </li>
-        <li class="element">
-          <img src="./images/elbrus.png" alt="Фотография" class="element__image">
-          <h2 class="element__heading">Гора Эльбрус</h2>
-          <button class="element__like" type="button"></button>
-        </li>
-        <li class="element">
-          <img src="./images/dombay.png" alt="Фотография" class="element__image">
-          <h2 class="element__heading">Домбай</h2>
-          <button class="element__like" type="button"></button>
-        </li>
-        <li class="element">
-          <img src="./images/elbrus2.png" alt="Фотография" class="element__image">
-          <h2 class="element__heading">Гора Эльбрус</h2>
-          <button class="element__like" type="button"></button>
-        </li>
-        <li class="element">
-          <img src="./images/dombay2.png" alt="Фотография" class="element__image">
-          <h2 class="element__heading">Домбай</h2>
-          <button class="element__like" type="button"></button>
-        </li>
-        <li class="element">
-          <img src="./images/carachaevo-cherkessk.png" alt="Фотография" class="element__image">
-          <h2 class="element__heading">Карачаево-Черкесская Республика</h2>
-          <button class="element__like" type="button"></button>
-        </li>
+        <template class="element-template">
+          <li class="element">
+            <img src="" alt="Фотография" class="element__image">
+            <h2 class="element__heading"></h2>
+            <button class="element__like" type="button"></button>
+          </li>
+        </template>
       </ul>
     </section>
-    <div class="popup popup-profile popup_opened">
+    <div class="popup popup-profile">
       <div class="popup__container">
         <form action="#" method="post" class="form" name="edit">
           <h2 class="form__title">Редактировать профиль</h2>
