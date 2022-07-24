@@ -7,7 +7,7 @@ const profilePopupName = document.querySelector('#name');
 const profilePopupSubtitle = document.querySelector('#subtitle');
 const profileFormElement = profilePopup.querySelector('.form');
 
-const modalCloseBtn = document.querySelectorAll('.popup__close');
+const modalCloseBtns = document.querySelectorAll('.popup__close');
 
 const elementPopup = document.querySelector('.popup-element');
 const elementFormElement = elementPopup.querySelector('.form');
@@ -63,7 +63,7 @@ function closePopup(popup) {
 }
 
 // обработчик сохранения окна профиля
-function formProfileSubmitHandler(evt) {
+function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   profileName.textContent = profilePopupName.value;
   profileSubtitle.textContent = profilePopupSubtitle.value;
@@ -71,14 +71,14 @@ function formProfileSubmitHandler(evt) {
 }
 
 // обработчик сохранения формы нового элемента
-function formElementSubmitHandler(evt) {
+function handleElementFormSubmit(evt) {
   evt.preventDefault();
   createElement(elementPopupName.value, elementPopupLink.value);
   closePopup(elementPopup);
   evt.target.reset();
 }
 
-function OpenImage(evt){
+function openImage(evt){
   const targetElement = evt.target.closest('.element');
   const targetImage = targetElement.querySelector('.element__image');
   const targetName = targetElement.querySelector('.element__heading');
@@ -103,7 +103,7 @@ function getElement(name, link) {
   elementTitle.textContent = name;
   elementLike.addEventListener('click', toggleLike);
   elementDelete.addEventListener('click', destroyElement)
-  elementImage.addEventListener('click', OpenImage)
+  elementImage.addEventListener('click', openImage)
 
   return element;
 }
@@ -136,14 +136,14 @@ newElementBtn.addEventListener('click', () => {
 });
 
 // событие на кнопки закрытия на всех модальных окнах
-modalCloseBtn.forEach((btn) => {
+modalCloseBtns.forEach((btn) => {
   btn.addEventListener('click', (evt) => {
     closePopup(evt.target.closest('.popup'));
   });
 })
 
-profileFormElement.addEventListener('submit', formProfileSubmitHandler);
-elementFormElement.addEventListener('submit', formElementSubmitHandler);
+profileFormElement.addEventListener('submit', handleProfileFormSubmit);
+elementFormElement.addEventListener('submit', handleElementFormSubmit);
 
 // Создание стартовых карточке из массива
 initialCards.forEach((value) => {
