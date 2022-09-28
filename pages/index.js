@@ -21,7 +21,7 @@ const newElementBtn = document.querySelector('.profile__add-button');
 
 const imagePopup = document.querySelector('.popup-image');
 const imagePopupImg = imagePopup.querySelector('.popup__image');
-const imagePopupName =  imagePopup.querySelector('.popup__image-name');
+const imagePopupName = imagePopup.querySelector('.popup__image-name');
 
 
 const initialCards = [
@@ -53,15 +53,22 @@ const initialCards = [
 
 const likes = document.querySelectorAll('.element__like')
 
-function escapePopup(evt){
-  if(evt.key === 'Escape') {
+function escapePopup(evt) {
+  if (evt.key === 'Escape') {
     closePopup(document.querySelector('.popup_opened'));
+  }
+}
+
+function overlayClick(evt) {
+  if (evt.target.classList.contains('popup')) {
+    closePopup(evt.target.closest('.popup'));
   }
 }
 
 // функция открытия модального окна
 function openPopup(popup) {
   popup.classList.add('popup_opened');
+  popup.addEventListener('click', overlayClick);
   document.addEventListener('keydown', escapePopup);
 }
 
@@ -87,7 +94,7 @@ function handleElementFormSubmit(evt) {
   evt.target.reset();
 }
 
-function openImage(evt){
+function openImage(evt) {
   const targetElement = evt.target.closest('.element');
   const targetImage = targetElement.querySelector('.element__image');
   const targetName = targetElement.querySelector('.element__heading');
@@ -122,8 +129,9 @@ function createElement(name, link) {
   const element = getElement(name, link);
   elementContainer.prepend(element);
 }
+
 // удаление элемента
-function destroyElement(evt){
+function destroyElement(evt) {
   evt.target.closest('.element').remove();
 }
 
@@ -150,13 +158,6 @@ modalCloseBtns.forEach((btn) => {
     closePopup(evt.target.closest('.popup'));
   });
 })
-modalOverlays.forEach((overlay)=>{
-  overlay.addEventListener('click',(evt)=>{
-    closePopup(evt.target.closest('.popup'));
-  })
-})
-
-
 
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
