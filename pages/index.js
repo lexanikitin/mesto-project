@@ -8,6 +8,7 @@ const profilePopupSubtitle = document.querySelector('#subtitle');
 const profileFormElement = profilePopup.querySelector('.form');
 
 const modalCloseBtns = document.querySelectorAll('.popup__close');
+const modalOverlays = document.querySelectorAll('.popup');
 
 const elementPopup = document.querySelector('.popup-element');
 const elementFormElement = elementPopup.querySelector('.form');
@@ -52,13 +53,21 @@ const initialCards = [
 
 const likes = document.querySelectorAll('.element__like')
 
+function escapePopup(evt){
+  if(evt.key === 'Escape') {
+    closePopup(document.querySelector('.popup_opened'));
+  }
+}
+
 // функция открытия модального окна
 function openPopup(popup) {
   popup.classList.add('popup_opened');
+  document.addEventListener('keydown', escapePopup);
 }
 
 // функция закрытия модального окна
 function closePopup(popup) {
+  document.removeEventListener('keydown', escapePopup);
   popup.classList.remove('popup_opened');
 }
 
@@ -141,6 +150,14 @@ modalCloseBtns.forEach((btn) => {
     closePopup(evt.target.closest('.popup'));
   });
 })
+modalOverlays.forEach((overlay)=>{
+  overlay.addEventListener('click',(evt)=>{
+    closePopup(evt.target.closest('.popup'));
+  })
+})
+
+
+
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 elementFormElement.addEventListener('submit', handleElementFormSubmit);
