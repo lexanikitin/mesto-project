@@ -36,14 +36,16 @@
         <form action="#" class="form" method="post" name="edit">
           <h2 class="form__title">Редактировать профиль</h2>
           <label>
-            <input class="form__input" data-error-message="Разрешены только латиница, кириллица, дефисы и пробелы"
+            <input class="form__input"
+                   data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                    id="name" maxlength="40" minlength="2"
                    name="name" placeholder="Имя" required
                    type="text" pattern="^[a-zA-Zа-яА-Я-\s]+$">
             <span class="form__error-message name-error"></span>
           </label>
           <label>
-            <input class="form__input" data-error-message="Разрешены только латиница, кириллица, дефисы и пробелы"
+            <input class="form__input"
+                   data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                    id="subtitle" maxlength="200" minlength="2"
                    name="subtitle" placeholder="О себе" required
                    type="text" pattern="^[a-zA-Zа-яА-Я-\s]+$">
@@ -60,7 +62,7 @@
           <h2 class="form__title">Новое место</h2>
           <label>
             <input class="form__input" id="element-name" name="element-name" placeholder="Название" required
-                   data-error-message="Разрешены только латиница, кириллица, дефисы и пробелы"
+                   data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                    type="text" maxlength="30" minlength="2" pattern="^[a-zA-Zа-яА-Я-\s]+$">
             <span class="form__error-message element-name-error"></span>
           </label>
