@@ -28,9 +28,6 @@ const elementPopupLink = document.querySelector('#element-link');
 
 const newElementBtn = document.querySelector('.profile__add-button');
 
-
-const likes = document.querySelectorAll('.element__like')
-
 const initialCards = [
   {
     name: 'Архыз',
