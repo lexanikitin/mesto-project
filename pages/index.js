@@ -76,6 +76,7 @@ function openPopup(popup) {
 function closePopup(popup) {
   document.removeEventListener('keydown', escapePopup);
   popup.classList.remove('popup_opened');
+  popup.querySelector('form').reset();
 }
 
 // обработчик сохранения окна профиля
