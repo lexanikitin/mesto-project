@@ -37,15 +37,17 @@
         <form action="#" class="form" method="post" name="edit">
           <h2 class="form__title">Редактировать профиль</h2>
           <label>
-            <input class="form__input" data-error-message="Разрешены только латиница, кирилица, дефисы и пробелы" id="name" maxlength="40" minlength="2"
+            <input class="form__input" data-error-message="Разрешены только латиница, кириллица, дефисы и пробелы"
+                   id="name" maxlength="40" minlength="2"
                    name="name" placeholder="Имя" required
-                   type="text">
+                   type="text" pattern="^[a-zA-Zа-яА-Я-\s]+$">
             <span class="form__error-message name-error"></span>
           </label>
           <label>
-            <input class="form__input" data-error-message="Разрешены только латиница, кирилица, дефисы и пробелы" id="subtitle" maxlength="200" minlength="2"
+            <input class="form__input" data-error-message="Разрешены только латиница, кириллица, дефисы и пробелы"
+                   id="subtitle" maxlength="200" minlength="2"
                    name="subtitle" placeholder="О себе" required
-                   type="text">
+                   type="text" pattern="^[a-zA-Zа-яА-Я-\s]+$">
             <span class="form__error-message subtitle-error"></span>
           </label>
           <button class="form__submit" type="submit">Сохранить</button>
@@ -59,14 +61,16 @@
           <h2 class="form__title">Новое место</h2>
           <label>
             <input class="form__input" id="element-name" name="element-name" placeholder="Название" required
-                   type="text">
+                   data-error-message="Разрешены только латиница, кириллица, дефисы и пробелы"
+                   type="text" maxlength="30" minlength="2" pattern="^[a-zA-Zа-яА-Я-\s]+$">
+            <span class="form__error-message element-name-error"></span>
           </label>
           <label>
             <input class="form__input" id="element-link" name="element-link" placeholder="Ссылка на картинку"
-                   required
-                   type="text">
+                   required type="url">
+            <span class="form__error-message element-link-error"></span>
           </label>
-          <button class="form__submit" disabled type="submit">Создать</button>
+          <button class="form__submit" type="submit">Создать</button>
         </form>
         <button aria-label="Закрыть" class="popup__close" type="button"></button>
       </div>
