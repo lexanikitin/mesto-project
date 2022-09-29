@@ -3,6 +3,7 @@ function escapePopup(evt) {
     closePopup(document.querySelector('.popup_opened'));
   }
 }
+
 function overlayClick(evt) {
   if (evt.target.classList.contains('popup')) {
     closePopup(evt.target.closest('.popup'));
@@ -20,5 +21,7 @@ export function openPopup(popup) {
 export function closePopup(popup) {
   document.removeEventListener('keydown', escapePopup);
   popup.classList.remove('popup_opened');
-  popup.querySelector('form').reset();
+  if (popup.querySelector('form')) {
+    popup.querySelector('form').reset();
+  }
 }

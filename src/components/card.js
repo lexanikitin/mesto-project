@@ -1,3 +1,5 @@
+import {openPopup} from "./modal";
+
 const elementTemplate = document.querySelector('.element-template').content;
 const elementContainer = document.querySelector('.elements');
 const imagePopup = document.querySelector('.popup-image');
