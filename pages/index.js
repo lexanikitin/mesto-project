@@ -167,3 +167,55 @@ elementFormElement.addEventListener('submit', handleElementFormSubmit);
 initialCards.forEach((value) => {
   createElement(value.name, value.link);
 })
+
+// скрытие сообщения о невалидности поля
+function hideErrorMessage(inputItem){
+  inputItem.classList.remove('form__input_state_error');
+  const errorSpan = inputItem.closest('.form').querySelector(`.${inputItem.id}-error`);
+  errorSpan.textContent = '';
+}
+
+// отображение сообщения о невалидности поля
+function showErrorMessage(inputItem){
+  inputItem.classList.add('form__input_state_error');
+  const errorSpan = inputItem.closest('.form').querySelector(`.${inputItem.id}-error`);
+  errorSpan.textContent = inputItem.validationMessage;
+}
+
+// проверка валидности поля ввода
+function checkInputValid(inputItem) {
+  if (inputItem.validity.patternMismatch) {
+    inputItem.setCustomValidity(inputItem.dataset.errorMessage)
+  } else {
+    inputItem.setCustomValidity("");
+  }
+  if (!inputItem.validity.valid) {
+    showErrorMessage(inputItem);
+  } else {
+    hideErrorMessage(inputItem);
+  }
+}
+
+// переключение состояния кнопки submit от состояния полей ввода
+function toggleSubmitButtonState(buttonItem, inputList) {
+  if (inputList.some((inputItem) => {
+    return !inputItem.validity.valid
+  })) {
+    buttonItem.setAttribute('disabled', 'disabled');
+  } else {
+    buttonItem.removeAttribute('disabled');
+  }
+}
+
+const forms = Array.from(document.querySelectorAll('.form'));
+forms.forEach((formItem) => {
+  const inputs = Array.from(formItem.querySelectorAll('.form__input'));
+  const submitButton = formItem.querySelector('.form__submit')
+  toggleSubmitButtonState(submitButton, inputs);
+  inputs.forEach((inputItem) => {
+    inputItem.addEventListener('input', () => {
+      checkInputValid(inputItem);
+      toggleSubmitButtonState(submitButton, inputs)
+    })
+  })
+})
