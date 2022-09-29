@@ -1,22 +1,29 @@
 .form__submit {
-  padding: 0;
+  background-color: black;
+  border: 0;
+  border-radius: 2px;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 400;
+  height: 50px;
+  line-height: 22px;
   margin: 0;
   margin-top: 18px;
-  height: 50px;
-  background-color: black;
-  color: #FFFFFF;
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 22px;
+  padding: 0;
   text-align: center;
-  border-radius: 2px;
-  cursor: pointer;
   transition: opacity .3s ease-in-out;
-  border: 0;
 }
 
 .form__submit:hover {
   opacity: .8;
+}
+
+.form__submit:disabled {
+  background-color: #FFFFFF;
+  border: 1px solid #000000;
+  color: black;
+  opacity: 0.2;
 }
 
 @media (max-width: 767px) {
