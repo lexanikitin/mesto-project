@@ -4,15 +4,14 @@
   <meta charset="UTF-8">
   <title>Mesto</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <link href="pages/index.css" rel="stylesheet">
 </head>
 <body class="page">
   <header class="header">
-    <img alt="Логотип Mesto" class="header__logo" src="./images/mesto-logo.svg">
+    <img alt="Логотип Mesto" class="header__logo" src="<%=require('./images/mesto-logo.svg')%>">
   </header>
   <main class="content">
     <section class="profile">
-      <img alt="Аватар пользователя" class="profile__avatar" src="./images/avatar.png">
+      <img alt="Аватар пользователя" class="profile__avatar" src="<%=require('./images/avatar.png')%>">
       <div class="profile__info">
         <h1 class="profile__name">Жак-Ив Кусто1</h1>
         <button aria-label="Изменить" class="profile__edit-button" type="button"></button>
@@ -86,7 +85,5 @@
   <footer class="footer">
     <p class="footer__copyright"> &copy; 2022 Mesto Russia</p>
   </footer>
-  <script src="pages/index.js">
-  </script>
 </body>
 </html>
