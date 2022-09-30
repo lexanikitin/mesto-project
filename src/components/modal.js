@@ -13,13 +13,13 @@ function handleOverlay(evt) {
 // функция открытия модального окна
 export function openPopup(popup) {
   popup.classList.add('popup_opened');
-  popup.addEventListener('click', handleOverlay);
+  popup.addEventListener('mousedown', handleOverlay);
   document.addEventListener('keydown', handleEscape);
 }
 
 // функция закрытия модального окна
 export function closePopup(popup) {
-  popup.removeEventListener('click', handleOverlay);
+  popup.removeEventListener('mousedown', handleOverlay);
   document.removeEventListener('keydown', handleEscape);
   popup.classList.remove('popup_opened');
 }
