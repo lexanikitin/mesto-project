@@ -54,16 +54,17 @@ export default function enableValidation({
   const forms = Array.from(document.querySelectorAll(formSelector));
   forms.forEach((formItem) => {
     const inputs = Array.from(formItem.querySelectorAll(inputSelector));
-    const submitButton = formItem.querySelector(submitButtonSelector)
+    const submitButton = formItem.querySelector(submitButtonSelector);
+    toggleSubmitButtonState(submitButton, inputs);
     formItem.addEventListener('reset', ()=>{
       setTimeout(()=>{
-        toggleSubmitButtonState(submitButton, inputs)
+        toggleSubmitButtonState(submitButton, inputs);
       }, 0);
     });
     inputs.forEach((inputItem) => {
       inputItem.addEventListener('input', () => {
         checkInputValid(inputItem);
-        toggleSubmitButtonState(submitButton, inputs)
+        toggleSubmitButtonState(submitButton, inputs);
       })
 
     })
