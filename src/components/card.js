@@ -6,15 +6,10 @@ const imagePopup = document.querySelector('.popup-image');
 const imagePopupImg = imagePopup.querySelector('.popup__image');
 const imagePopupName = imagePopup.querySelector('.popup__image-name');
 
-function openImage(evt) {
-  const targetElement = evt.target.closest('.element');
-  const targetImage = targetElement.querySelector('.element__image');
-  const targetName = targetElement.querySelector('.element__heading');
-
-  imagePopupImg.src = targetImage.src;
-  imagePopupImg.alt = targetImage.alt;
-  imagePopupName.textContent = targetName.textContent;
-
+function openImage(name, link) {
+  imagePopupImg.src = link;
+  imagePopupImg.alt = name;
+  imagePopupName.textContent = name;
   openPopup(imagePopup);
 }
 
@@ -31,13 +26,13 @@ function getElement(name, link) {
   elementTitle.textContent = name;
   elementLike.addEventListener('click', toggleLike);
   elementDelete.addEventListener('click', destroyElement)
-  elementImage.addEventListener('click', openImage)
+  elementImage.addEventListener('click', ()=> openImage(name, link))
 
   return element;
 }
 
 // вставка элемента в контейнер на странице
-export function createElement(name, link) {
+export function prependElement(name, link) {
   const element = getElement(name, link);
   elementContainer.prepend(element);
 }

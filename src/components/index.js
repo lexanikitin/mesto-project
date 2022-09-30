@@ -1,7 +1,7 @@
 import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
-import {createElement} from "./card";
+import {prependElement} from "./card";
 
 const arkhyz = new URL('../images/arkhyz.jpg', import.meta.url);
 const chelyabinsk = new URL('../images/chelyabinsk-oblast.jpg', import.meta.url);
@@ -67,7 +67,7 @@ function handleProfileFormSubmit(evt) {
 // обработчик сохранения формы нового элемента
 function handleElementFormSubmit(evt) {
   evt.preventDefault();
-  createElement(elementPopupName.value, elementPopupLink.value);
+  prependElement(elementPopupName.value, elementPopupLink.value);
   closePopup(elementPopup);
   evt.target.reset();
 }
@@ -96,7 +96,7 @@ elementFormElement.addEventListener('submit', handleElementFormSubmit);
 
 // Создание стартовых карточке из массива
 initialCards.forEach((value) => {
-  createElement(value.name, value.link);
+  prependElement(value.name, value.link);
 })
 
 enableValidation({

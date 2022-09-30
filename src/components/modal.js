@@ -1,27 +1,25 @@
-function escapePopup(evt) {
+function handleEscape(evt) {
   if (evt.key === 'Escape') {
     closePopup(document.querySelector('.popup_opened'));
   }
 }
 
-function overlayClick(evt) {
+function handleOverlay(evt) {
   if (evt.target.classList.contains('popup')) {
-    closePopup(evt.target.closest('.popup'));
+    closePopup(evt.target);
   }
 }
 
 // функция открытия модального окна
 export function openPopup(popup) {
   popup.classList.add('popup_opened');
-  popup.addEventListener('click', overlayClick);
-  document.addEventListener('keydown', escapePopup);
+  popup.addEventListener('click', handleOverlay);
+  document.addEventListener('keydown', handleEscape);
 }
 
 // функция закрытия модального окна
 export function closePopup(popup) {
-  document.removeEventListener('keydown', escapePopup);
+  popup.removeEventListener('click', handleOverlay);
+  document.removeEventListener('keydown', handleEscape);
   popup.classList.remove('popup_opened');
-  if (popup.querySelector('form')) {
-    popup.querySelector('form').reset();
-  }
 }
