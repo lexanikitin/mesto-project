@@ -66,3 +66,17 @@ export function postCard(name, link) {
       return Promise.reject(`Код ошибки: ${res.status}`);
     })
 }
+
+export function deleteCard(id){
+  return fetch(`${config.baseUrl}/cards/${id}`, {
+    method: 'DELETE',
+    headers: config.headers,
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Код ошибки: ${res.status}`);
+    })
+
+}

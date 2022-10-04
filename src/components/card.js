@@ -3,6 +3,7 @@ import {openPopup} from "./modal";
 const elementTemplate = document.querySelector('.element-template').content;
 const elementContainer = document.querySelector('.elements');
 const imagePopup = document.querySelector('.popup-image');
+const deletePopup = document.querySelector('.popup-delete');
 const imagePopupImg = imagePopup.querySelector('.popup__image');
 const imagePopupName = imagePopup.querySelector('.popup__image-name');
 
@@ -46,7 +47,8 @@ export function prependElement(name, link, id, likes, ownerId, userId) {
 
 // удаление элемента
 function destroyElement(evt) {
-  evt.target.closest('.element').remove();
+  deletePopup.dataset.deletedElement = evt.target.closest('.element').id;
+  openPopup(deletePopup);
 }
 
 // обработчик события лайка

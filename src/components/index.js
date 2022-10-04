@@ -2,7 +2,7 @@ import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
 import {prependElement} from "./card";
-import {getUserInfo, patchUserInfo, getCards, postCard} from "./api";
+import {getUserInfo, patchUserInfo, getCards, postCard, deleteCard} from "./api";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -14,6 +14,8 @@ const profilePopupSubtitle = document.querySelector('#subtitle');
 const profileFormElement = profilePopup.querySelector('.form');
 const profileAvatar = document.querySelector('.profile__avatar');
 
+const deletePopup = document.querySelector('.popup-delete');
+const deleteFormElement = deletePopup.querySelector('.form');
 
 const modalCloseBtns = document.querySelectorAll('.popup__close');
 
@@ -82,6 +84,22 @@ function handleElementFormSubmit(evt) {
     });
 }
 
+function handleDeleteElementFormSubmit(evt){
+  evt.preventDefault();
+  const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
+    .then(() => {
+      document.getElementById(deletePopup.dataset.deletedElement).remove();
+    })
+    .catch((err) => {
+      console.error('Ошибка при удалении карточки.', err);
+    })
+    .finally(() => {
+      closePopup(deletePopup);
+      deletePopup.dataset.deletedElement = '';
+    });
+
+}
+
 // открытие окна редактирования профиля
 profileOpenBtn.addEventListener('click', () => {
   openPopup(profilePopup);
@@ -103,6 +121,7 @@ modalCloseBtns.forEach((btn) => {
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 elementFormElement.addEventListener('submit', handleElementFormSubmit);
+deleteFormElement.addEventListener('submit', handleDeleteElementFormSubmit);
 
 
 enableValidation({
