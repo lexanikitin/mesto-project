@@ -1,11 +1,11 @@
-.element__image{
-  margin: 0;
-  padding: 0;
-  width: 282px;
-  height: 282px;
-  grid-column-start: 1;
-  grid-column-end: end;
-  object-fit: cover;
+.element__image {
   border-radius: 10px 10px 0 0;
   cursor: pointer;
+  grid-column-end: end;
+  grid-column-start: 1;
+  height: 282px;
+  margin: 0;
+  object-fit: cover;
+  padding: 0;
+  width: 282px;
 }

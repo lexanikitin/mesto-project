@@ -1,13 +1,13 @@
-.element__heading{
-  font-weight: 900;
+.element__heading {
+  color: black;
   font-size: 24px;
+  font-weight: 900;
   line-height: 29px;
   margin: 0;
+  max-width: 246px;
+  overflow: hidden;
   padding: 0;
   padding-left: 21px;
-  color: black;
-  max-width: 246px;
   text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
 }

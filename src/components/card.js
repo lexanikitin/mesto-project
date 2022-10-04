@@ -18,7 +18,7 @@ function getElement(name, link, id) {
   const element = elementTemplate.querySelector('.element').cloneNode(true);
   const elementImage = element.querySelector('.element__image');
   const elementTitle = element.querySelector('.element__heading');
-  const elementLike = element.querySelector('.element__like');
+  const elementLike = element.querySelector('.element__like-btn');
   const elementDelete = element.querySelector('.element__delete');
 
   elementImage.src = link;
@@ -45,5 +45,5 @@ function destroyElement(evt) {
 
 // обработчик события лайка
 function toggleLike(evt) {
-  evt.target.classList.toggle('element__like_active');
+  evt.target.classList.toggle('element__like-btn_active');
 }

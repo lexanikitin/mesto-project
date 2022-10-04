@@ -1,12 +1,13 @@
-.element{
-  margin: 0;
-  padding: 0;
+.element {
   background-color: white;
   border-radius: 10px;
-  position: relative;
-  width: 282px;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
   min-height: 362px;
-  display: grid;
-  grid-template-columns: 230px auto;
-  grid-template-rows: auto auto;
+  padding: 0;
+  position: relative;
+  row-gap: 18px;
+  width: 282px;
+
 }
