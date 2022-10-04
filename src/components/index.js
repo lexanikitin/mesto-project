@@ -39,7 +39,7 @@ const promiseUserInfo = getUserInfo()
 const promiseGetCards = getCards()
   .then((result) => {
     result.forEach((card) => {
-      prependElement(card.name, card.link, card._id);
+      prependElement(card.name, card.link, card._id, card.likes.length);
     })
   })
   .catch((err) => {
@@ -67,7 +67,7 @@ function handleElementFormSubmit(evt) {
   evt.preventDefault();
   const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
     .then((result) => {
-      prependElement(elementPopupName.value, elementPopupLink.value, result._id);
+      prependElement(elementPopupName.value, elementPopupLink.value, result._id, 0);
     })
     .catch((err) => {
       console.error('Ошибка при сохранении профиля.', err);
