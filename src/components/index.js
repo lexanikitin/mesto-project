@@ -1,8 +1,8 @@
 import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
-import {prependElement} from "./card";
-import {getUserInfo, patchUserInfo, getCards, postCard, deleteCard} from "./api";
+import {prependElement, redrawLikeCounter} from "./card";
+import {getUserInfo, patchUserInfo, getCards, postCard, deleteCard, putLike, deleteLike} from "./api";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -45,7 +45,7 @@ const promiseUserInfo = getUserInfo()
 const promiseGetCards = getCards()
   .then((result) => {
     result.forEach((card) => {
-      prependElement(card.name, card.link, card._id, card.likes.length, card.owner._id, userId);
+      prependElement(card.name, card.link, card._id, card.likes, card.owner._id, userId);
     })
   })
   .catch((err) => {
@@ -73,7 +73,7 @@ function handleElementFormSubmit(evt) {
   evt.preventDefault();
   const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
     .then((result) => {
-      prependElement(elementPopupName.value, elementPopupLink.value, result._id, 0, result.owner._id, userId);
+      prependElement(elementPopupName.value, elementPopupLink.value, result._id, [], result.owner._id, userId);
     })
     .catch((err) => {
       console.error('Ошибка при сохранении профиля.', err);
@@ -84,6 +84,7 @@ function handleElementFormSubmit(evt) {
     });
 }
 
+// обработчик формы подтверждения удаления карточки
 function handleDeleteElementFormSubmit(evt){
   evt.preventDefault();
   const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
@@ -97,7 +98,28 @@ function handleDeleteElementFormSubmit(evt){
       closePopup(deletePopup);
       deletePopup.dataset.deletedElement = '';
     });
+}
 
+// обработчик постановки лайка с карточки
+export function handlePutLike(cardId){
+  const promisePutLike = putLike(cardId)
+    .then((result) => {
+      redrawLikeCounter(cardId, result.likes.length)
+    })
+    .catch((err) => {
+      console.error('Ошибка при сохранении лайка на сервере.', err);
+    })
+}
+
+// обработчик удаления лайка с карточки
+export function handleDeleteLike(cardId) {
+  const promiseDeleteLike = deleteLike(cardId)
+    .then((result) => {
+      redrawLikeCounter(cardId, result.likes.length)
+    })
+    .catch((err) => {
+      console.error('Ошибка при удалении лайка на сервере.', err);
+    })
 }
 
 // открытие окна редактирования профиля

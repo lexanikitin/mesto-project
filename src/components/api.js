@@ -78,5 +78,32 @@ export function deleteCard(id){
       }
       return Promise.reject(`Код ошибки: ${res.status}`);
     })
-
 }
+
+export function putLike(id){
+  return fetch(`${config.baseUrl}/cards/likes/${id}`, {
+    method: 'PUT',
+    headers: config.headers,
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Код ошибки: ${res.status}`);
+    })
+}
+
+export function deleteLike(id){
+  return fetch(`${config.baseUrl}/cards/likes/${id}`, {
+    method: 'DELETE',
+    headers: config.headers,
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Код ошибки: ${res.status}`);
+    })
+}
+
+

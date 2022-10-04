@@ -1,4 +1,5 @@
 import {openPopup} from "./modal";
+import {handlePutLike, handleDeleteLike} from "./index";
 
 const elementTemplate = document.querySelector('.element-template').content;
 const elementContainer = document.querySelector('.elements');
@@ -34,8 +35,12 @@ function getElement(name, link, id, likes, ownerId, userId) {
   }
   elementImage.addEventListener('click', () => openImage(name, link))
   element.id = id;
-  elementLikeCounter.textContent = likes;
-
+  elementLikeCounter.textContent = likes.length;
+  if (likes.some((like) => {
+    return like._id === userId;
+  })) {
+    elementLike.classList.add('element__like-btn_active');
+  }
   return element;
 }
 
@@ -53,5 +58,15 @@ function destroyElement(evt) {
 
 // обработчик события лайка
 function toggleLike(evt) {
-  evt.target.classList.toggle('element__like-btn_active');
+  if (evt.target.classList.contains('element__like-btn_active')) {
+    evt.target.classList.remove('element__like-btn_active');
+    handleDeleteLike(evt.target.closest('.element').id);
+  } else {
+    evt.target.classList.add('element__like-btn_active');
+    handlePutLike(evt.target.closest('.element').id);
+  }
+}
+
+export function redrawLikeCounter(cardId, likeCounter) {
+  document.getElementById(cardId).querySelector('.element__like-counter').textContent = likeCounter;
 }
