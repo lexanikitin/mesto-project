@@ -2,13 +2,7 @@ import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
 import {prependElement} from "./card";
-
-const arkhyz = new URL('../images/arkhyz.jpg', import.meta.url);
-const chelyabinsk = new URL('../images/chelyabinsk-oblast.jpg', import.meta.url);
-const ivanovo = new URL('../images/ivanovo.jpg', import.meta.url);
-const kamchatka = new URL('../images/kamchatka.jpg', import.meta.url);
-const kholmogorsky = new URL('../images/kholmogorsky-rayon.jpg', import.meta.url);
-const baikal = new URL('../images/baikal.jpg', import.meta.url);
+import {getUserInfo, getCards} from "./api";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -18,6 +12,8 @@ const profilePopup = document.querySelector('.popup-profile');
 const profilePopupName = document.querySelector('#name');
 const profilePopupSubtitle = document.querySelector('#subtitle');
 const profileFormElement = profilePopup.querySelector('.form');
+const profileAvatar = document.querySelector('.profile__avatar');
+
 
 const modalCloseBtns = document.querySelectorAll('.popup__close');
 
@@ -28,33 +24,29 @@ const elementPopupLink = document.querySelector('#element-link');
 
 const newElementBtn = document.querySelector('.profile__add-button');
 
-const initialCards = [
-  {
-    name: 'Архыз',
-    link: arkhyz
-  },
-  {
-    name: 'Челябинская область',
-    link: chelyabinsk
-  },
-  {
-    name: 'Иваново',
-    link: ivanovo
-  },
-  {
-    name: 'Камчатка',
-    link: kamchatka
-  },
-  {
-    name: 'Холмогорский район',
-    link: kholmogorsky
-  },
-  {
-    name: 'Байкал',
-    link: baikal
-  }
-];
+// получаем профиль пользователя
+const promiseUserInfo = getUserInfo()
+  .then((result) => {
+    profileName.textContent = result.name;
+    profileSubtitle.textContent = result.about;
+    profileAvatar.src = result.avatar;
+  })
+  .catch((err) => {
+    console.error('Ошибка при получении данных пользователя.',err);
+  });
 
+// получаем карточки
+const promiseGetCards = getCards()
+  .then((result) => {
+    console.log(result);
+    // Создание стартовых карточке из массива
+    result.forEach((card) => {
+      prependElement(card.name, card.link, card._id);
+    })
+  })
+  .catch((err) => {
+    console.error('Ошибка при получении карточек.',err);
+  });
 
 // обработчик сохранения окна профиля
 function handleProfileFormSubmit(evt) {
@@ -94,10 +86,7 @@ modalCloseBtns.forEach((btn) => {
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 elementFormElement.addEventListener('submit', handleElementFormSubmit);
 
-// Создание стартовых карточке из массива
-initialCards.forEach((value) => {
-  prependElement(value.name, value.link);
-})
+
 
 enableValidation({
   formSelector: '.form',

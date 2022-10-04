@@ -14,7 +14,7 @@ function openImage(name, link) {
 }
 
 // генерация элемента из шаблона и наполнение
-function getElement(name, link) {
+function getElement(name, link, id) {
   const element = elementTemplate.querySelector('.element').cloneNode(true);
   const elementImage = element.querySelector('.element__image');
   const elementTitle = element.querySelector('.element__heading');
@@ -27,13 +27,14 @@ function getElement(name, link) {
   elementLike.addEventListener('click', toggleLike);
   elementDelete.addEventListener('click', destroyElement)
   elementImage.addEventListener('click', ()=> openImage(name, link))
+  element.id=id;
 
   return element;
 }
 
 // вставка элемента в контейнер на странице
-export function prependElement(name, link) {
-  const element = getElement(name, link);
+export function prependElement(name, link, id) {
+  const element = getElement(name, link, id);
   elementContainer.prepend(element);
 }
 
