@@ -2,7 +2,7 @@ import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
 import {prependElement} from "./card";
-import {getUserInfo, getCards} from "./api";
+import {getUserInfo, patchUserInfo, getCards, postCard} from "./api";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -32,36 +32,50 @@ const promiseUserInfo = getUserInfo()
     profileAvatar.src = result.avatar;
   })
   .catch((err) => {
-    console.error('Ошибка при получении данных пользователя.',err);
+    console.error('Ошибка при получении данных пользователя.', err);
   });
 
 // получаем карточки
 const promiseGetCards = getCards()
   .then((result) => {
-    console.log(result);
-    // Создание стартовых карточке из массива
     result.forEach((card) => {
       prependElement(card.name, card.link, card._id);
     })
   })
   .catch((err) => {
-    console.error('Ошибка при получении карточек.',err);
+    console.error('Ошибка при получении карточек.', err);
   });
 
 // обработчик сохранения окна профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  profileName.textContent = profilePopupName.value;
-  profileSubtitle.textContent = profilePopupSubtitle.value;
-  closePopup(profilePopup);
+  const promisePatchUserInfo = patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
+    .then((result) => {
+      profileName.textContent = profilePopupName.value;
+      profileSubtitle.textContent = profilePopupSubtitle.value;
+    })
+    .catch((err) => {
+      console.error('Ошибка при сохранении профиля.', err);
+    })
+    .finally(() => {
+      closePopup(profilePopup);
+    });
 }
 
 // обработчик сохранения формы нового элемента
 function handleElementFormSubmit(evt) {
   evt.preventDefault();
-  prependElement(elementPopupName.value, elementPopupLink.value);
-  closePopup(elementPopup);
-  evt.target.reset();
+  const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
+    .then((result) => {
+      prependElement(elementPopupName.value, elementPopupLink.value, result._id);
+    })
+    .catch((err) => {
+      console.error('Ошибка при сохранении профиля.', err);
+    })
+    .finally(() => {
+      closePopup(elementPopup);
+      evt.target.reset();
+    });
 }
 
 // открытие окна редактирования профиля
@@ -85,7 +99,6 @@ modalCloseBtns.forEach((btn) => {
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 elementFormElement.addEventListener('submit', handleElementFormSubmit);
-
 
 
 enableValidation({
