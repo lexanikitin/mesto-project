@@ -24,12 +24,16 @@ const elementPopupLink = document.querySelector('#element-link');
 
 const newElementBtn = document.querySelector('.profile__add-button');
 
+// храним ID пользователя (позже стоит убрать в куки?)
+let userId;
+
 // получаем профиль пользователя
 const promiseUserInfo = getUserInfo()
   .then((result) => {
     profileName.textContent = result.name;
     profileSubtitle.textContent = result.about;
     profileAvatar.src = result.avatar;
+    userId = result._id;
   })
   .catch((err) => {
     console.error('Ошибка при получении данных пользователя.', err);
@@ -39,7 +43,7 @@ const promiseUserInfo = getUserInfo()
 const promiseGetCards = getCards()
   .then((result) => {
     result.forEach((card) => {
-      prependElement(card.name, card.link, card._id, card.likes.length);
+      prependElement(card.name, card.link, card._id, card.likes.length, card.owner._id, userId);
     })
   })
   .catch((err) => {
@@ -50,7 +54,7 @@ const promiseGetCards = getCards()
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   const promisePatchUserInfo = patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
-    .then((result) => {
+    .then(() => {
       profileName.textContent = profilePopupName.value;
       profileSubtitle.textContent = profilePopupSubtitle.value;
     })
@@ -67,7 +71,7 @@ function handleElementFormSubmit(evt) {
   evt.preventDefault();
   const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
     .then((result) => {
-      prependElement(elementPopupName.value, elementPopupLink.value, result._id, 0);
+      prependElement(elementPopupName.value, elementPopupLink.value, result._id, 0, result.owner._id, userId);
     })
     .catch((err) => {
       console.error('Ошибка при сохранении профиля.', err);
