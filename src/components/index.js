@@ -33,27 +33,20 @@ const newElementBtn = document.querySelector('.profile__add-button');
 // храним ID пользователя (позже стоит убрать в куки?)
 let userId;
 
-// получаем профиль пользователя
-const promiseUserInfo = getUserInfo()
-  .then((result) => {
-    profileName.textContent = result.name;
-    profileSubtitle.textContent = result.about;
-    profileAvatar.src = result.avatar;
-    userId = result._id;
-  })
-  .catch((err) => {
-    console.error('Ошибка при получении данных пользователя.', err);
-  });
+Promise.all([getUserInfo(), getCards()])
+  .then((result)=>{
+    profileName.textContent = result[0].name;
+    profileSubtitle.textContent = result[0].about;
+    profileAvatar.src = result[0].avatar;
+    userId = result[0]._id;
 
-// получаем карточки
-const promiseGetCards = getCards()
-  .then((result) => {
-    result.forEach((card) => {
+    result[1].forEach((card) => {
       prependElement(card.name, card.link, card._id, card.likes, card.owner._id, userId);
     })
+
   })
-  .catch((err) => {
-    console.error('Ошибка при получении карточек.', err);
+  .catch((err)=>{
+    console.error('Ошибка при загрузке данных с сервера.', err);
   });
 
 // обработчик сохранения окна профиля
@@ -64,12 +57,12 @@ function handleProfileFormSubmit(evt) {
     .then(() => {
       profileName.textContent = profilePopupName.value;
       profileSubtitle.textContent = profilePopupSubtitle.value;
+      closePopup(profilePopup);
     })
     .catch((err) => {
       console.error('Ошибка при сохранении профиля.', err);
     })
     .finally(() => {
-      closePopup(profilePopup);
       evt.submitter.textContent = 'Сохранить'
     });
 }
@@ -81,12 +74,12 @@ function handleElementFormSubmit(evt) {
   const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
     .then((result) => {
       prependElement(elementPopupName.value, elementPopupLink.value, result._id, [], result.owner._id, userId);
+      closePopup(elementPopup);
     })
     .catch((err) => {
       console.error('Ошибка при сохранении профиля.', err);
     })
     .finally(() => {
-      closePopup(elementPopup);
       evt.submitter.textContent = 'Создать'
       evt.target.reset();
     });
@@ -99,12 +92,12 @@ function handleDeleteElementFormSubmit(evt){
   const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
     .then(() => {
       document.getElementById(deletePopup.dataset.deletedElement).remove();
+      closePopup(deletePopup);
     })
     .catch((err) => {
       console.error('Ошибка при удалении карточки.', err);
     })
     .finally(() => {
-      closePopup(deletePopup);
       evt.submitter.textContent = 'Да'
       deletePopup.dataset.deletedElement = '';
     });
@@ -117,12 +110,12 @@ function handleAvatarFormSubmit(evt){
   const promisePatchUserAvatar = patchUserAvatar(avatarPopupLink.value)
     .then((result) => {
       profileAvatar.src = result.avatar;
+      closePopup(avatarPopup);
     })
     .catch((err) => {
       console.error('Ошибка при загрузке нового аватара.', err);
     })
     .finally(() => {
-      closePopup(avatarPopup);
       evt.submitter.textContent = 'Сохранить'
       evt.target.reset();
     });
@@ -132,6 +125,7 @@ function handleAvatarFormSubmit(evt){
 export function handlePutLike(cardId){
   const promisePutLike = putLike(cardId)
     .then((result) => {
+      document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
       redrawLikeCounter(cardId, result.likes.length)
     })
     .catch((err) => {
@@ -143,6 +137,7 @@ export function handlePutLike(cardId){
 export function handleDeleteLike(cardId) {
   const promiseDeleteLike = deleteLike(cardId)
     .then((result) => {
+      document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
       redrawLikeCounter(cardId, result.likes.length)
     })
     .catch((err) => {
