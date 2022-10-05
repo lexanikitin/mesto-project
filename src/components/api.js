@@ -38,6 +38,22 @@ export function patchUserInfo(name, about) {
     })
 }
 
+export function patchUserAvatar(link) {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: link
+    })
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Код ошибки: ${res.status}`);
+    })
+}
+
 export function getCards() {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers

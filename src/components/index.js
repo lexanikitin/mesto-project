@@ -2,11 +2,15 @@ import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
 import {prependElement, redrawLikeCounter} from "./card";
-import {getUserInfo, patchUserInfo, getCards, postCard, deleteCard, putLike, deleteLike} from "./api";
+import {getUserInfo, patchUserInfo, patchUserAvatar, getCards, postCard, deleteCard, putLike, deleteLike} from "./api";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
 const profileOpenBtn = document.querySelector('.profile__edit-button');
+const avatarOpenBtn = document.querySelector('.profile__avatar-block');
+const avatarPopup = document.querySelector('.popup-avatar');
+const avatarFormElement = avatarPopup.querySelector('.form');
+const avatarPopupLink = document.querySelector('#avatar-link');
 
 const profilePopup = document.querySelector('.popup-profile');
 const profilePopupName = document.querySelector('#name');
@@ -100,6 +104,22 @@ function handleDeleteElementFormSubmit(evt){
     });
 }
 
+// обработчик формы изменения аватара
+function handleAvatarFormSubmit(evt){
+  evt.preventDefault();
+  const promisePatchUserAvatar = patchUserAvatar(avatarPopupLink.value)
+    .then((result) => {
+      profileAvatar.src = result.avatar;
+    })
+    .catch((err) => {
+      console.error('Ошибка при загрузке нового аватара.', err);
+    })
+    .finally(() => {
+      closePopup(avatarPopup);
+      evt.target.reset();
+    });
+}
+
 // обработчик постановки лайка с карточки
 export function handlePutLike(cardId){
   const promisePutLike = putLike(cardId)
@@ -122,6 +142,11 @@ export function handleDeleteLike(cardId) {
     })
 }
 
+// открытие окна изменения аватара
+avatarOpenBtn.addEventListener('click', ()=>{
+  openPopup(avatarPopup);
+});
+
 // открытие окна редактирования профиля
 profileOpenBtn.addEventListener('click', () => {
   openPopup(profilePopup);
@@ -141,10 +166,11 @@ modalCloseBtns.forEach((btn) => {
   });
 })
 
+// события отправки форм
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 elementFormElement.addEventListener('submit', handleElementFormSubmit);
 deleteFormElement.addEventListener('submit', handleDeleteElementFormSubmit);
-
+avatarFormElement.addEventListener('submit', handleAvatarFormSubmit);
 
 enableValidation({
   formSelector: '.form',
