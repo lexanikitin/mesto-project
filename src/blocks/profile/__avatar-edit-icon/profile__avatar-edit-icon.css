@@ -1,0 +1,9 @@
+.profile__avatar-edit-icon{
+  background-image: url("../../../images/avatar-edit.svg");
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  top: 47px;
+  left: 47px;
+  visibility: hidden;
+}

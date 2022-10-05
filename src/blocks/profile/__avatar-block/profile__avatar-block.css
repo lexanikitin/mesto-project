@@ -1,0 +1,13 @@
+.profile__avatar-block {
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+
+.profile__avatar-block:hover .profile__avatar-edit-icon {
+  visibility: visible;
+}
+
+.profile__avatar-block:hover .profile__avatar {
+  opacity: .2;
+}

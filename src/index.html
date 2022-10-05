@@ -11,7 +11,10 @@
   </header>
   <main class="content">
     <section class="profile">
-      <img alt="Аватар пользователя" class="profile__avatar" src="<%=require('./images/avatar.png')%>">
+      <div class="profile__avatar-block">
+        <img alt="Аватар пользователя" class="profile__avatar" src="<%=require('./images/avatar.png')%>">
+        <div class="profile__avatar-edit-icon"></div>
+      </div>
       <div class="profile__info">
         <h1 class="profile__name">Жак-Ив Кусто</h1>
         <button aria-label="Изменить" class="profile__edit-button" type="button"></button>
@@ -61,7 +64,7 @@
         <button aria-label="Закрыть" class="popup__close" type="button"></button>
       </div>
     </div>
-    <div class="popup popup-element">
+    <div class="popup popup-element ">
       <div class="popup__container">
         <form action="#" class="form" method="post" name="new-element">
           <h2 class="form__title">Новое место</h2>
@@ -75,6 +78,20 @@
             <input class="form__input" id="element-link" name="element-link" placeholder="Ссылка на картинку"
                    required type="url">
             <span class="form__error-message element-link-error"></span>
+          </label>
+          <button class="form__submit" type="submit">Создать</button>
+        </form>
+        <button aria-label="Закрыть" class="popup__close" type="button"></button>
+      </div>
+    </div>
+    <div class="popup popup-avatar">
+      <div class="popup__container">
+        <form action="#" class="form" method="post" name="new-avatar">
+          <h2 class="form__title">Обновить аватар</h2>
+          <label>
+            <input class="form__input" id="avatar-link" name="avatar-link" placeholder="Ссылка на аватар"
+                   required type="url">
+            <span class="form__error-message avatar-link-error"></span>
           </label>
           <button class="form__submit" type="submit">Создать</button>
         </form>
