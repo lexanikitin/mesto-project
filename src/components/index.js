@@ -1,23 +1,25 @@
 import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
-import {prependElement} from "./card";
-
-const arkhyz = new URL('../images/arkhyz.jpg', import.meta.url);
-const chelyabinsk = new URL('../images/chelyabinsk-oblast.jpg', import.meta.url);
-const ivanovo = new URL('../images/ivanovo.jpg', import.meta.url);
-const kamchatka = new URL('../images/kamchatka.jpg', import.meta.url);
-const kholmogorsky = new URL('../images/kholmogorsky-rayon.jpg', import.meta.url);
-const baikal = new URL('../images/baikal.jpg', import.meta.url);
+import {prependElement, redrawLikeCounter} from "./card";
+import {getUserInfo, patchUserInfo, patchUserAvatar, getCards, postCard, deleteCard, putLike, deleteLike} from "./api";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
 const profileOpenBtn = document.querySelector('.profile__edit-button');
+const avatarOpenBtn = document.querySelector('.profile__avatar-block');
+const avatarPopup = document.querySelector('.popup-avatar');
+const avatarFormElement = avatarPopup.querySelector('.form');
+const avatarPopupLink = document.querySelector('#avatar-link');
 
 const profilePopup = document.querySelector('.popup-profile');
 const profilePopupName = document.querySelector('#name');
 const profilePopupSubtitle = document.querySelector('#subtitle');
 const profileFormElement = profilePopup.querySelector('.form');
+const profileAvatar = document.querySelector('.profile__avatar');
+
+const deletePopup = document.querySelector('.popup-delete');
+const deleteFormElement = deletePopup.querySelector('.form');
 
 const modalCloseBtns = document.querySelectorAll('.popup__close');
 
@@ -28,49 +30,130 @@ const elementPopupLink = document.querySelector('#element-link');
 
 const newElementBtn = document.querySelector('.profile__add-button');
 
-const initialCards = [
-  {
-    name: 'Архыз',
-    link: arkhyz
-  },
-  {
-    name: 'Челябинская область',
-    link: chelyabinsk
-  },
-  {
-    name: 'Иваново',
-    link: ivanovo
-  },
-  {
-    name: 'Камчатка',
-    link: kamchatka
-  },
-  {
-    name: 'Холмогорский район',
-    link: kholmogorsky
-  },
-  {
-    name: 'Байкал',
-    link: baikal
-  }
-];
+// храним ID пользователя (позже стоит убрать в куки?)
+let userId;
 
+// получаем профиль пользователя
+const promiseUserInfo = getUserInfo()
+  .then((result) => {
+    profileName.textContent = result.name;
+    profileSubtitle.textContent = result.about;
+    profileAvatar.src = result.avatar;
+    userId = result._id;
+  })
+  .catch((err) => {
+    console.error('Ошибка при получении данных пользователя.', err);
+  });
+
+// получаем карточки
+const promiseGetCards = getCards()
+  .then((result) => {
+    result.forEach((card) => {
+      prependElement(card.name, card.link, card._id, card.likes, card.owner._id, userId);
+    })
+  })
+  .catch((err) => {
+    console.error('Ошибка при получении карточек.', err);
+  });
 
 // обработчик сохранения окна профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  profileName.textContent = profilePopupName.value;
-  profileSubtitle.textContent = profilePopupSubtitle.value;
-  closePopup(profilePopup);
+  evt.submitter.textContent = 'Сохранение...'
+  const promisePatchUserInfo = patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
+    .then(() => {
+      profileName.textContent = profilePopupName.value;
+      profileSubtitle.textContent = profilePopupSubtitle.value;
+    })
+    .catch((err) => {
+      console.error('Ошибка при сохранении профиля.', err);
+    })
+    .finally(() => {
+      closePopup(profilePopup);
+      evt.submitter.textContent = 'Сохранить'
+    });
 }
 
 // обработчик сохранения формы нового элемента
 function handleElementFormSubmit(evt) {
   evt.preventDefault();
-  prependElement(elementPopupName.value, elementPopupLink.value);
-  closePopup(elementPopup);
-  evt.target.reset();
+  evt.submitter.textContent = 'Сохранение...'
+  const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
+    .then((result) => {
+      prependElement(elementPopupName.value, elementPopupLink.value, result._id, [], result.owner._id, userId);
+    })
+    .catch((err) => {
+      console.error('Ошибка при сохранении профиля.', err);
+    })
+    .finally(() => {
+      closePopup(elementPopup);
+      evt.submitter.textContent = 'Создать'
+      evt.target.reset();
+    });
 }
+
+// обработчик формы подтверждения удаления карточки
+function handleDeleteElementFormSubmit(evt){
+  evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
+  const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
+    .then(() => {
+      document.getElementById(deletePopup.dataset.deletedElement).remove();
+    })
+    .catch((err) => {
+      console.error('Ошибка при удалении карточки.', err);
+    })
+    .finally(() => {
+      closePopup(deletePopup);
+      evt.submitter.textContent = 'Да'
+      deletePopup.dataset.deletedElement = '';
+    });
+}
+
+// обработчик формы изменения аватара
+function handleAvatarFormSubmit(evt){
+  evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
+  const promisePatchUserAvatar = patchUserAvatar(avatarPopupLink.value)
+    .then((result) => {
+      profileAvatar.src = result.avatar;
+    })
+    .catch((err) => {
+      console.error('Ошибка при загрузке нового аватара.', err);
+    })
+    .finally(() => {
+      closePopup(avatarPopup);
+      evt.submitter.textContent = 'Сохранить'
+      evt.target.reset();
+    });
+}
+
+// обработчик постановки лайка с карточки
+export function handlePutLike(cardId){
+  const promisePutLike = putLike(cardId)
+    .then((result) => {
+      redrawLikeCounter(cardId, result.likes.length)
+    })
+    .catch((err) => {
+      console.error('Ошибка при сохранении лайка на сервере.', err);
+    })
+}
+
+// обработчик удаления лайка с карточки
+export function handleDeleteLike(cardId) {
+  const promiseDeleteLike = deleteLike(cardId)
+    .then((result) => {
+      redrawLikeCounter(cardId, result.likes.length)
+    })
+    .catch((err) => {
+      console.error('Ошибка при удалении лайка на сервере.', err);
+    })
+}
+
+// открытие окна изменения аватара
+avatarOpenBtn.addEventListener('click', ()=>{
+  openPopup(avatarPopup);
+});
 
 // открытие окна редактирования профиля
 profileOpenBtn.addEventListener('click', () => {
@@ -91,13 +174,11 @@ modalCloseBtns.forEach((btn) => {
   });
 })
 
+// события отправки форм
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 elementFormElement.addEventListener('submit', handleElementFormSubmit);
-
-// Создание стартовых карточке из массива
-initialCards.forEach((value) => {
-  prependElement(value.name, value.link);
-})
+deleteFormElement.addEventListener('submit', handleDeleteElementFormSubmit);
+avatarFormElement.addEventListener('submit', handleAvatarFormSubmit);
 
 enableValidation({
   formSelector: '.form',

@@ -1,4 +1,4 @@
-.element__like {
+.element__like-btn {
   background-image: url("../../../images/like.svg");
   width: 22px;
   height: 19px;
@@ -8,10 +8,10 @@
   background-color: transparent;
   cursor: pointer;
 }
-.element__like:hover{
+.element__like-btn:hover{
   opacity: .5;
 }
-.element__like:active{
+.element__like-btn:active{
   background-image: url("../../../images/like-active.svg");
   opacity: 1;
 }
