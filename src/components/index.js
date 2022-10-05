@@ -59,6 +59,7 @@ const promiseGetCards = getCards()
 // обработчик сохранения окна профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
   const promisePatchUserInfo = patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
     .then(() => {
       profileName.textContent = profilePopupName.value;
@@ -69,12 +70,14 @@ function handleProfileFormSubmit(evt) {
     })
     .finally(() => {
       closePopup(profilePopup);
+      evt.submitter.textContent = 'Сохранить'
     });
 }
 
 // обработчик сохранения формы нового элемента
 function handleElementFormSubmit(evt) {
   evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
   const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
     .then((result) => {
       prependElement(elementPopupName.value, elementPopupLink.value, result._id, [], result.owner._id, userId);
@@ -84,6 +87,7 @@ function handleElementFormSubmit(evt) {
     })
     .finally(() => {
       closePopup(elementPopup);
+      evt.submitter.textContent = 'Создать'
       evt.target.reset();
     });
 }
@@ -91,6 +95,7 @@ function handleElementFormSubmit(evt) {
 // обработчик формы подтверждения удаления карточки
 function handleDeleteElementFormSubmit(evt){
   evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
   const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
     .then(() => {
       document.getElementById(deletePopup.dataset.deletedElement).remove();
@@ -100,6 +105,7 @@ function handleDeleteElementFormSubmit(evt){
     })
     .finally(() => {
       closePopup(deletePopup);
+      evt.submitter.textContent = 'Да'
       deletePopup.dataset.deletedElement = '';
     });
 }
@@ -107,6 +113,7 @@ function handleDeleteElementFormSubmit(evt){
 // обработчик формы изменения аватара
 function handleAvatarFormSubmit(evt){
   evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
   const promisePatchUserAvatar = patchUserAvatar(avatarPopupLink.value)
     .then((result) => {
       profileAvatar.src = result.avatar;
@@ -116,6 +123,7 @@ function handleAvatarFormSubmit(evt){
     })
     .finally(() => {
       closePopup(avatarPopup);
+      evt.submitter.textContent = 'Сохранить'
       evt.target.reset();
     });
 }
