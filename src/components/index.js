@@ -125,6 +125,7 @@ function handleAvatarFormSubmit(evt){
 export function handlePutLike(cardId){
   const promisePutLike = putLike(cardId)
     .then((result) => {
+      document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
       redrawLikeCounter(cardId, result.likes.length)
     })
     .catch((err) => {
@@ -136,6 +137,7 @@ export function handlePutLike(cardId){
 export function handleDeleteLike(cardId) {
   const promiseDeleteLike = deleteLike(cardId)
     .then((result) => {
+      document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
       redrawLikeCounter(cardId, result.likes.length)
     })
     .catch((err) => {

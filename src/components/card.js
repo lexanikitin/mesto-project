@@ -59,10 +59,8 @@ function destroyElement(evt) {
 // обработчик события лайка
 function toggleLike(evt) {
   if (evt.target.classList.contains('element__like-btn_active')) {
-    evt.target.classList.remove('element__like-btn_active');
     handleDeleteLike(evt.target.closest('.element').id);
   } else {
-    evt.target.classList.add('element__like-btn_active');
     handlePutLike(evt.target.closest('.element').id);
   }
 }
