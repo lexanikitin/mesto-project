@@ -2,13 +2,13 @@ import {handleDeleteLike, handlePutLike} from "./index";
 import {openPopup} from "./modal";
 
 export default class Card {
-  constructor({data, handleCardClick, handleDeleteCard}, selectorTemplate) {
+  constructor({data, userId, handleCardClick, handleDeleteCard}, selectorTemplate)   {
     this._name = data.name;
     this._link = data.link;
-    this._id = data.id;
+    this._id = data._id;
     this._likes = data.likes;
-    this._ownerId = data.ownerId;
-    this._userId = data._userId;
+    this._ownerId = data.owner._id;
+    this._userId = userId;
     this._handleCardClick = handleCardClick;
     this._handleDeleteCard = handleDeleteCard;
     this._selector = selectorTemplate;

@@ -4,6 +4,8 @@ import enableValidation from "./validate";
 import {prependElement, redrawLikeCounter} from "./card";
 import {getUserInfo, patchUserInfo, patchUserAvatar, getCards, postCard, deleteCard, putLike, deleteLike} from "./api";
 
+import Card from "./classCard";
+
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
 const profileOpenBtn = document.querySelector('.profile__edit-button');
@@ -41,8 +43,21 @@ Promise.all([getUserInfo(), getCards()])
     userId = result[0]._id;
 
     result[1].forEach((card) => {
+      const cardElement = new Card({
+        data: card,
+        userId,
+        handleCardClick: () => {
+          console.log();
+        },
+        handleDeleteCard: (evt) => {
+          console.log(evt.target.closest('.element').id);
+        }
+      }, '.element-template');
+
+      console.log(cardElement.genarate());
       prependElement(card.name, card.link, card._id, card.likes, card.owner._id, userId);
-    })
+      //console.log(card);
+    });
 
   })
   .catch((err)=>{
