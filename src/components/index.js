@@ -5,6 +5,8 @@ import {prependElement, redrawLikeCounter} from "./card";
 import {getUserInfo, patchUserInfo, patchUserAvatar, getCards, postCard, deleteCard, putLike, deleteLike} from "./api";
 
 import Card from "./classCard";
+const elementContainer = document.querySelector('.elements');
+
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -46,17 +48,25 @@ Promise.all([getUserInfo(), getCards()])
       const cardElement = new Card({
         data: card,
         userId,
-        handleCardClick: () => {
-          console.log();
+        handleCardClick: (name, link) => {
+          //TODO создать объект popupImage
+          const imagePopup = document.querySelector('.popup-image');
+          const imagePopupImg = imagePopup.querySelector('.popup__image');
+          const imagePopupName = imagePopup.querySelector('.popup__image-name');
+          imagePopupImg.src = link;
+          imagePopupImg.alt = name;
+          imagePopupName.textContent = name;
+          openPopup(imagePopup);
         },
         handleDeleteCard: (evt) => {
+          //TODO создать объект popupImageDelete
           console.log(evt.target.closest('.element').id);
         }
       }, '.element-template');
 
-      console.log(cardElement.genarate());
-      prependElement(card.name, card.link, card._id, card.likes, card.owner._id, userId);
-      //console.log(card);
+      //console.log(cardElement.genarate());
+      elementContainer.prepend(cardElement.genarate());
+      //prependElement(card.name, card.link, card._id, card.likes, card.owner._id, userId);
     });
 
   })
