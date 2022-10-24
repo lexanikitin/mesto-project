@@ -99,6 +99,7 @@ function handleElementFormSubmit(evt) {
   const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
     .then((result) => {
       prependElement(elementPopupName.value, elementPopupLink.value, result._id, [], result.owner._id, userId);
+      //TODO выдается ошибка сервера (400)
       closePopup(elementPopup);
     })
     .catch((err) => {
