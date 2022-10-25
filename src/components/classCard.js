@@ -30,6 +30,7 @@ export default class Card {
       handlePutLike(evt.target.closest('.element').id);
     }
   }
+
   _setEventListeners() {
     this._elementLike.addEventListener('click', (evt) => {
       this._toggleLike(evt);

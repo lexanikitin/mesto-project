@@ -7,6 +7,7 @@ import {getUserInfo, patchUserInfo, patchUserAvatar, getCards, postCard, deleteC
 import Card from "./classCard";
 const elementContainer = document.querySelector('.elements');
 import Section from "./Section";
+import classApi from "./classApi";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -36,9 +37,17 @@ const newElementBtn = document.querySelector('.profile__add-button');
 
 // храним ID пользователя (позже стоит убрать в куки?)
 let userId;
+const config = {
+  baseUrl: 'https://nomoreparties.co/v1/plus-cohort-15',
+  headers: {
+    authorization: '8cf18d1a-5438-4fe9-84de-67a8b7385fb6',
+    'Content-Type': 'application/json'
+  }
+}
+const api = new classApi(config);
 
-Promise.all([getUserInfo(), getCards()])
-  .then((result)=>{
+Promise.all([api.getUserInfo(), api.getCards()])
+  .then((result) => {
     profileName.textContent = result[0].name;
     profileSubtitle.textContent = result[0].about;
     profileAvatar.src = result[0].avatar;
@@ -81,7 +90,8 @@ Promise.all([getUserInfo(), getCards()])
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
-  const promisePatchUserInfo = patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
+  //const promisePatchUserInfo = patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
+    api.patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
     .then(() => {
       profileName.textContent = profilePopupName.value;
       profileSubtitle.textContent = profilePopupSubtitle.value;
@@ -99,7 +109,8 @@ function handleProfileFormSubmit(evt) {
 function handleElementFormSubmit(evt) {
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
-  const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
+  //const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
+    api.postCard(elementPopupName.value, elementPopupLink.value)
     .then((result) => {
       prependElement(elementPopupName.value, elementPopupLink.value, result._id, [], result.owner._id, userId);
       closePopup(elementPopup);
@@ -117,7 +128,8 @@ function handleElementFormSubmit(evt) {
 function handleDeleteElementFormSubmit(evt){
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
-  const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
+  //const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
+    api.deleteCard(deletePopup.dataset.deletedElement)
     .then(() => {
       document.getElementById(deletePopup.dataset.deletedElement).remove();
       closePopup(deletePopup);
@@ -135,7 +147,8 @@ function handleDeleteElementFormSubmit(evt){
 function handleAvatarFormSubmit(evt){
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
-  const promisePatchUserAvatar = patchUserAvatar(avatarPopupLink.value)
+  //const promisePatchUserAvatar = patchUserAvatar(avatarPopupLink.value)
+    api.patchUserAvatar(avatarPopupLink.value)
     .then((result) => {
       profileAvatar.src = result.avatar;
       closePopup(avatarPopup);
@@ -151,7 +164,8 @@ function handleAvatarFormSubmit(evt){
 
 // обработчик постановки лайка с карточки
 export function handlePutLike(cardId){
-  const promisePutLike = putLike(cardId)
+  //const promisePutLike = putLike(cardId)
+    api.putLike(cardId)
     .then((result) => {
       document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
       redrawLikeCounter(cardId, result.likes.length)
@@ -163,7 +177,8 @@ export function handlePutLike(cardId){
 
 // обработчик удаления лайка с карточки
 export function handleDeleteLike(cardId) {
-  const promiseDeleteLike = deleteLike(cardId)
+  //const promiseDeleteLike = deleteLike(cardId)
+  api.deleteLike(cardId)
     .then((result) => {
       document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
       redrawLikeCounter(cardId, result.likes.length)
