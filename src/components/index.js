@@ -7,6 +7,7 @@ import Card from "./classCard";
 const elementContainer = document.querySelector('.elements');
 import Section from "./Section";
 import classApi from "./classApi";
+import PopupWithImage from "./PopupWithImage";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -58,14 +59,8 @@ Promise.all([api.getUserInfo(), api.getCards()])
           data: item,
           userId,
           handleCardClick: (name, link) => {
-            //TODO создать объект popupImage
-            const imagePopup = document.querySelector('.popup-image');
-            const imagePopupImg = imagePopup.querySelector('.popup__image');
-            const imagePopupName = imagePopup.querySelector('.popup__image-name');
-            imagePopupImg.src = link;
-            imagePopupImg.alt = name;
-            imagePopupName.textContent = name;
-            openPopup(imagePopup);
+            const imagePopup = new PopupWithImage('.popup-image', name, link);
+            imagePopup.open();
           },
           handleDeleteCard: (evt) => {
             //TODO создать объект popupImageDelete
