@@ -3,10 +3,13 @@ import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
 
 import Card from "./Card";
+
 const elementContainer = document.querySelector('.elements');
 import Section from "./Section";
 import Api from "./Api";
 import PopupWithImage from "./PopupWithImage";
+import Popup from "./Popup";
+import PopupWithForm from "./PopupWithForm";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -65,7 +68,26 @@ Promise.all([api.getUserInfo(), api.getCards()])
           },
           handleDeleteCard: (evt) => {
             //TODO создать объект popupImageDelete
-            console.log(evt.target.closest('.element').id);
+            const cardId = evt.target.closest('.element').id;
+
+            const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
+              evt.preventDefault();
+              evt.submitter.textContent = 'Сохранение...'
+              api.deleteCard(cardId)
+                .then((res) => {
+                  console.log('lkjlkjlkjl');
+                  document.getElementById(cardId).remove();
+                  confirmPopup.close();
+                })
+                .catch((err) => {
+                  console.error('Ошибка при удалении карточки.', err);
+                })
+                .finally(() => {
+                  evt.submitter.textContent = 'Да'
+                  deletePopup.dataset.deletedElement = '';
+                });
+            });
+            confirmPopup.open();
           },
           handlePutLike: (cardId) => {
             api.putLike(cardId)
@@ -95,7 +117,7 @@ Promise.all([api.getUserInfo(), api.getCards()])
     cardsList.renderItems();
 
   })
-  .catch((err)=>{
+  .catch((err) => {
     console.error('Ошибка при загрузке данных с сервера.', err);
   });
 
@@ -104,7 +126,7 @@ function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
   //const promisePatchUserInfo = patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
-    api.patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
+  api.patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
     .then(() => {
       profileName.textContent = profilePopupName.value;
       profileSubtitle.textContent = profilePopupSubtitle.value;
@@ -123,7 +145,7 @@ function handleElementFormSubmit(evt) {
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
   //const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
-    api.postCard(elementPopupName.value, elementPopupLink.value)
+  api.postCard(elementPopupName.value, elementPopupLink.value)
     .then((result) => {
 
       const newCard = new Card({
@@ -135,7 +157,24 @@ function handleElementFormSubmit(evt) {
         },
         handleDeleteCard: (evt) => {
           //TODO создать объект popupImageDelete
-          console.log(evt.target.closest('.element').id);
+          const cardId = evt.target.closest('.element').id;
+          const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
+            evt.preventDefault();
+            evt.submitter.textContent = 'Сохранение...'
+            api.deleteCard(cardId)
+              .then((res) => {
+                document.getElementById(cardId).remove();
+                confirmPopup.close();
+              })
+              .catch((err) => {
+                console.error('Ошибка при удалении карточки.', err);
+              })
+              .finally(() => {
+                evt.submitter.textContent = 'Да'
+                deletePopup.dataset.deletedElement = '';
+              });
+          });
+          confirmPopup.open();
         },
         handlePutLike: (cardId) => {
           api.putLike(cardId)
@@ -172,11 +211,11 @@ function handleElementFormSubmit(evt) {
 }
 
 // обработчик формы подтверждения удаления карточки
-function handleDeleteElementFormSubmit(evt){
+function handleDeleteElementFormSubmit(evt) {
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
   //const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
-    api.deleteCard(deletePopup.dataset.deletedElement)
+  api.deleteCard(deletePopup.dataset.deletedElement)
     .then(() => {
       document.getElementById(deletePopup.dataset.deletedElement).remove();
       closePopup(deletePopup);
@@ -191,11 +230,11 @@ function handleDeleteElementFormSubmit(evt){
 }
 
 // обработчик формы изменения аватара
-function handleAvatarFormSubmit(evt){
+function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
   //const promisePatchUserAvatar = patchUserAvatar(avatarPopupLink.value)
-    api.patchUserAvatar(avatarPopupLink.value)
+  api.patchUserAvatar(avatarPopupLink.value)
     .then((result) => {
       profileAvatar.src = result.avatar;
       closePopup(avatarPopup);
@@ -210,7 +249,7 @@ function handleAvatarFormSubmit(evt){
 }
 
 // открытие окна изменения аватара
-avatarOpenBtn.addEventListener('click', ()=>{
+avatarOpenBtn.addEventListener('click', () => {
   openPopup(avatarPopup);
 });
 
