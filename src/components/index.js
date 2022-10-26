@@ -1,15 +1,11 @@
 import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
-import enableValidation from "./validate";
-
 import Card from "./Card";
-
-const elementContainer = document.querySelector('.elements');
 import Section from "./Section";
 import Api from "./Api";
 import PopupWithImage from "./PopupWithImage";
-import Popup from "./Popup";
 import PopupWithForm from "./PopupWithForm";
+import FormValidator from "./FormValidator";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -278,11 +274,17 @@ elementFormElement.addEventListener('submit', handleElementFormSubmit);
 deleteFormElement.addEventListener('submit', handleDeleteElementFormSubmit);
 avatarFormElement.addEventListener('submit', handleAvatarFormSubmit);
 
-enableValidation({
+const validationProps = {
   formSelector: '.form',
   inputSelector: '.form__input',
   submitButtonSelector: '.form__submit',
   inactiveButtonClass: 'form__submit_disabled',
   inputErrorClass: 'form__input_state_error',
   errorClass: 'form__error-message_visible'
-})
+};
+const validationProfileForm = new FormValidator({data: validationProps}, profileFormElement);
+validationProfileForm.enableValidation();
+const validationElementForm = new FormValidator({data: validationProps}, elementFormElement);
+validationElementForm.enableValidation();
+const validationAvatarForm = new FormValidator({data: validationProps}, avatarFormElement);
+validationAvatarForm.enableValidation();
