@@ -1,5 +1,5 @@
 import {openPopup} from "./modal";
-import {handlePutLike, handleDeleteLike} from "./index";
+//import {handlePutLike, handleDeleteLike} from "./index";
 
 const elementTemplate = document.querySelector('.element-template').content;
 const elementContainer = document.querySelector('.elements');

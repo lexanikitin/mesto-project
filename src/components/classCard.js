@@ -2,15 +2,18 @@ import {handleDeleteLike, handlePutLike} from "./index";
 import {openPopup} from "./modal";
 
 export default class Card {
-  constructor({data, userId, handleCardClick, handleDeleteCard}, selectorTemplate)   {
+  constructor({data, userId, handleCardClick, handleDeleteCard,
+                handlePutLike, handleDeleteLike}, selectorTemplate)   {
     this._name = data.name;
     this._link = data.link;
     this._id = data._id;
-    this._likes = data.likes;
+    this.likes = data.likes;
     this._ownerId = data.owner._id;
     this._userId = userId;
     this._handleCardClick = handleCardClick;
     this._handleDeleteCard = handleDeleteCard;
+    this._handlePutLike = handlePutLike;
+    this._handleDeleteLike = handleDeleteLike;
     this._selector = selectorTemplate;
   }
 
@@ -25,9 +28,9 @@ export default class Card {
 
   _toggleLike(evt) {
     if(evt.target.classList.contains('element__like-btn_active')) {
-      handleDeleteLike(evt.target.closest('.element').id);
+      this._handleDeleteLike(evt.target.closest('.element').id);
     } else {
-      handlePutLike(evt.target.closest('.element').id);
+      this._handlePutLike(evt.target.closest('.element').id);
     }
   }
 
@@ -60,8 +63,8 @@ export default class Card {
     this._elementImage.src = this._link;
     this._elementImage.alt = this._name;
     this._elementTitle.textContent = this._name;
-    this._elementLikeCounter.textContent = this._likes.length;
-    if (this._likes.some((like) => {
+    this._elementLikeCounter.textContent = this.likes.length;
+    if (this.likes.some((like) => {
       return like._id === this._userId;
     })) {
       this._elementLike.classList.add('element__like-btn_active');
@@ -69,5 +72,7 @@ export default class Card {
     this._setEventListeners();
     return this._element;
   }
-
+  redrawLikeCounter(cardId, likeCounter) {
+    document.getElementById(cardId).querySelector('.element__like-counter').textContent = likeCounter;
+  }
 }

@@ -2,7 +2,6 @@ import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
 import {prependElement, redrawLikeCounter} from "./card";
-import {getUserInfo, patchUserInfo, patchUserAvatar, getCards, postCard, deleteCard, putLike, deleteLike} from "./api";
 
 import Card from "./classCard";
 const elementContainer = document.querySelector('.elements');
@@ -45,7 +44,6 @@ const config = {
   }
 }
 const api = new classApi(config);
-
 Promise.all([api.getUserInfo(), api.getCards()])
   .then((result) => {
     profileName.textContent = result[0].name;
@@ -72,6 +70,25 @@ Promise.all([api.getUserInfo(), api.getCards()])
           handleDeleteCard: (evt) => {
             //TODO создать объект popupImageDelete
             console.log(evt.target.closest('.element').id);
+          },
+          handlePutLike: (cardId) => {
+            api.putLike(cardId)
+              .then((result) => {
+                document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
+                card.redrawLikeCounter(cardId, result.likes.length)
+              })
+              .catch((err) => {
+                console.error('Ошибка при сохранении лайка на сервере.', err);
+              })
+          }, handleDeleteLike: (cardId) => {
+            api.deleteLike(cardId)
+              .then((result) => {
+                document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
+                card.redrawLikeCounter(cardId, result.likes.length)
+              })
+              .catch((err) => {
+                console.error('Ошибка при удалении лайка на сервере.', err);
+              })
           }
         }, '.element-template');
         const cardElement = card.genarate();
@@ -160,32 +177,6 @@ function handleAvatarFormSubmit(evt){
       evt.submitter.textContent = 'Сохранить'
       evt.target.reset();
     });
-}
-
-// обработчик постановки лайка с карточки
-export function handlePutLike(cardId){
-  //const promisePutLike = putLike(cardId)
-    api.putLike(cardId)
-    .then((result) => {
-      document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
-      redrawLikeCounter(cardId, result.likes.length)
-    })
-    .catch((err) => {
-      console.error('Ошибка при сохранении лайка на сервере.', err);
-    })
-}
-
-// обработчик удаления лайка с карточки
-export function handleDeleteLike(cardId) {
-  //const promiseDeleteLike = deleteLike(cardId)
-  api.deleteLike(cardId)
-    .then((result) => {
-      document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
-      redrawLikeCounter(cardId, result.likes.length)
-    })
-    .catch((err) => {
-      console.error('Ошибка при удалении лайка на сервере.', err);
-    })
 }
 
 // открытие окна изменения аватара
