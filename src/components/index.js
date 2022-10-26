@@ -1,12 +1,11 @@
 import '../pages/index.css';
 import {openPopup, closePopup} from "./modal";
 import enableValidation from "./validate";
-import {prependElement, redrawLikeCounter} from "./card";
 
-import Card from "./classCard";
+import Card from "./Card";
 const elementContainer = document.querySelector('.elements');
 import Section from "./Section";
-import classApi from "./classApi";
+import Api from "./Api";
 import PopupWithImage from "./PopupWithImage";
 
 const profileName = document.querySelector('.profile__name');
@@ -44,7 +43,9 @@ const config = {
     'Content-Type': 'application/json'
   }
 }
-const api = new classApi(config);
+let cardsList;
+
+const api = new Api(config);
 Promise.all([api.getUserInfo(), api.getCards()])
   .then((result) => {
     profileName.textContent = result[0].name;
@@ -52,7 +53,7 @@ Promise.all([api.getUserInfo(), api.getCards()])
     profileAvatar.src = result[0].avatar;
     userId = result[0]._id;
     const items = result[1];
-    const cardsList = new Section({
+    cardsList = new Section({
       items,
       renderer: (item) => {
         const card = new Card({
@@ -86,7 +87,7 @@ Promise.all([api.getUserInfo(), api.getCards()])
               })
           }
         }, '.element-template');
-        const cardElement = card.genarate();
+        const cardElement = card.generate();
         cardsList.addItem(cardElement);
       },
     }, '.elements');
@@ -124,7 +125,41 @@ function handleElementFormSubmit(evt) {
   //const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
     api.postCard(elementPopupName.value, elementPopupLink.value)
     .then((result) => {
-      prependElement(elementPopupName.value, elementPopupLink.value, result._id, [], result.owner._id, userId);
+
+      const newCard = new Card({
+        data: result,
+        userId,
+        handleCardClick: (name, link) => {
+          const imagePopup = new PopupWithImage('.popup-image', name, link);
+          imagePopup.open();
+        },
+        handleDeleteCard: (evt) => {
+          //TODO создать объект popupImageDelete
+          console.log(evt.target.closest('.element').id);
+        },
+        handlePutLike: (cardId) => {
+          api.putLike(cardId)
+            .then((result) => {
+              document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
+              newCard.redrawLikeCounter(cardId, result.likes.length)
+            })
+            .catch((err) => {
+              console.error('Ошибка при сохранении лайка на сервере.', err);
+            })
+        }, handleDeleteLike: (cardId) => {
+          api.deleteLike(cardId)
+            .then((result) => {
+              document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
+              newCard.redrawLikeCounter(cardId, result.likes.length)
+            })
+            .catch((err) => {
+              console.error('Ошибка при удалении лайка на сервере.', err);
+            })
+        }
+      }, '.element-template');
+      const newCardElement = newCard.generate();
+      cardsList.addItem(newCardElement);
+
       closePopup(elementPopup);
     })
     .catch((err) => {

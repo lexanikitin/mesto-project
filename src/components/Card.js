@@ -1,6 +1,3 @@
-import {handleDeleteLike, handlePutLike} from "./index";
-import {openPopup} from "./modal";
-
 export default class Card {
   constructor({data, userId, handleCardClick, handleDeleteCard,
                 handlePutLike, handleDeleteLike}, selectorTemplate)   {
@@ -51,7 +48,7 @@ export default class Card {
 
   }
 
-  genarate() {
+  generate() {
     this._element = this._getElement();
     this._elementImage = this._element.querySelector('.element__image');
     this._elementTitle = this._element.querySelector('.element__heading');
