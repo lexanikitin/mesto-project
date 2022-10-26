@@ -3,6 +3,8 @@ export default class Popup {
     this._popupElement = document.querySelector(selector)
   }
 
+
+
   // метод открытия модального окна
   open() {
     this._popupElement.classList.add('popup_opened');

@@ -1,5 +1,4 @@
 import '../pages/index.css';
-import {openPopup, closePopup} from "./modal";
 import Card from "./Card";
 import Section from "./Section";
 import Api from "./Api";
@@ -24,8 +23,6 @@ const profileAvatar = document.querySelector('.profile__avatar');
 const deletePopup = document.querySelector('.popup-delete');
 const deleteFormElement = deletePopup.querySelector('.form');
 
-const modalCloseBtns = document.querySelectorAll('.popup__close');
-
 const elementPopup = document.querySelector('.popup-element');
 const elementFormElement = elementPopup.querySelector('.form');
 const elementPopupName = document.querySelector('#element-name');
@@ -43,6 +40,53 @@ const config = {
   }
 }
 let cardsList;
+const cartObjTemplate = {
+  handleCardClick: (name, link) => {
+    const imagePopup = new PopupWithImage('.popup-image', name, link);
+    imagePopup.open();
+  },
+  handleDeleteCard: (evt) => {
+    //TODO создать объект popupImageDelete
+    const cardId = evt.target.closest('.element').id;
+    const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
+      evt.preventDefault();
+      evt.submitter.textContent = 'Сохранение...'
+      api.deleteCard(cardId)
+        .then((res) => {
+          document.getElementById(cardId).remove();
+          confirmPopup.close();
+        })
+        .catch((err) => {
+          console.error('Ошибка при удалении карточки.', err);
+        })
+        .finally(() => {
+          evt.submitter.textContent = 'Да'
+          deletePopup.dataset.deletedElement = '';
+        });
+    });
+    confirmPopup.open();
+  },
+  handlePutLike: (cardId) => {
+    api.putLike(cardId)
+      .then((result) => {
+        document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
+        card.redrawLikeCounter(cardId, result.likes.length)
+      })
+      .catch((err) => {
+        console.error('Ошибка при сохранении лайка на сервере.', err);
+      })
+  },
+  handleDeleteLike: (cardId) => {
+    api.deleteLike(cardId)
+      .then((result) => {
+        document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
+        card.redrawLikeCounter(cardId, result.likes.length)
+      })
+      .catch((err) => {
+        console.error('Ошибка при удалении лайка на сервере.', err);
+      })
+  }
+}
 
 const api = new Api(config);
 Promise.all([api.getUserInfo(), api.getCards()])
@@ -55,56 +99,8 @@ Promise.all([api.getUserInfo(), api.getCards()])
     cardsList = new Section({
       items,
       renderer: (item) => {
-        const card = new Card({
-          data: item,
-          userId,
-          handleCardClick: (name, link) => {
-            const imagePopup = new PopupWithImage('.popup-image', name, link);
-            imagePopup.open();
-          },
-          handleDeleteCard: (evt) => {
-            //TODO создать объект popupImageDelete
-            const cardId = evt.target.closest('.element').id;
-
-            const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
-              evt.preventDefault();
-              evt.submitter.textContent = 'Сохранение...'
-              api.deleteCard(cardId)
-                .then((res) => {
-                  console.log('lkjlkjlkjl');
-                  document.getElementById(cardId).remove();
-                  confirmPopup.close();
-                })
-                .catch((err) => {
-                  console.error('Ошибка при удалении карточки.', err);
-                })
-                .finally(() => {
-                  evt.submitter.textContent = 'Да'
-                  deletePopup.dataset.deletedElement = '';
-                });
-            });
-            confirmPopup.open();
-          },
-          handlePutLike: (cardId) => {
-            api.putLike(cardId)
-              .then((result) => {
-                document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
-                card.redrawLikeCounter(cardId, result.likes.length)
-              })
-              .catch((err) => {
-                console.error('Ошибка при сохранении лайка на сервере.', err);
-              })
-          }, handleDeleteLike: (cardId) => {
-            api.deleteLike(cardId)
-              .then((result) => {
-                document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
-                card.redrawLikeCounter(cardId, result.likes.length)
-              })
-              .catch((err) => {
-                console.error('Ошибка при удалении лайка на сервере.', err);
-              })
-          }
-        }, '.element-template');
+        const card = new Card({data: item}, userId, cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
+          cartObjTemplate.handlePutLike, cartObjTemplate.handleDeleteLikecartObjTemplate, '.element-template');
         const cardElement = card.generate();
         cardsList.addItem(cardElement);
       },
@@ -117,162 +113,74 @@ Promise.all([api.getUserInfo(), api.getCards()])
     console.error('Ошибка при загрузке данных с сервера.', err);
   });
 
-// обработчик сохранения окна профиля
-function handleProfileFormSubmit(evt) {
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  //const promisePatchUserInfo = patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
-  api.patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
-    .then(() => {
-      profileName.textContent = profilePopupName.value;
-      profileSubtitle.textContent = profilePopupSubtitle.value;
-      closePopup(profilePopup);
-    })
-    .catch((err) => {
-      console.error('Ошибка при сохранении профиля.', err);
-    })
-    .finally(() => {
-      evt.submitter.textContent = 'Сохранить'
-    });
-}
-
-// обработчик сохранения формы нового элемента
-function handleElementFormSubmit(evt) {
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  //const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
-  api.postCard(elementPopupName.value, elementPopupLink.value)
-    .then((result) => {
-
-      const newCard = new Card({
-        data: result,
-        userId,
-        handleCardClick: (name, link) => {
-          const imagePopup = new PopupWithImage('.popup-image', name, link);
-          imagePopup.open();
-        },
-        handleDeleteCard: (evt) => {
-          //TODO создать объект popupImageDelete
-          const cardId = evt.target.closest('.element').id;
-          const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
-            evt.preventDefault();
-            evt.submitter.textContent = 'Сохранение...'
-            api.deleteCard(cardId)
-              .then((res) => {
-                document.getElementById(cardId).remove();
-                confirmPopup.close();
-              })
-              .catch((err) => {
-                console.error('Ошибка при удалении карточки.', err);
-              })
-              .finally(() => {
-                evt.submitter.textContent = 'Да'
-                deletePopup.dataset.deletedElement = '';
-              });
-          });
-          confirmPopup.open();
-        },
-        handlePutLike: (cardId) => {
-          api.putLike(cardId)
-            .then((result) => {
-              document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
-              newCard.redrawLikeCounter(cardId, result.likes.length)
-            })
-            .catch((err) => {
-              console.error('Ошибка при сохранении лайка на сервере.', err);
-            })
-        }, handleDeleteLike: (cardId) => {
-          api.deleteLike(cardId)
-            .then((result) => {
-              document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
-              newCard.redrawLikeCounter(cardId, result.likes.length)
-            })
-            .catch((err) => {
-              console.error('Ошибка при удалении лайка на сервере.', err);
-            })
-        }
-      }, '.element-template');
-      const newCardElement = newCard.generate();
-      cardsList.addItem(newCardElement);
-
-      closePopup(elementPopup);
-    })
-    .catch((err) => {
-      console.error('Ошибка при сохранении профиля.', err);
-    })
-    .finally(() => {
-      evt.submitter.textContent = 'Создать'
-      evt.target.reset();
-    });
-}
-
-// обработчик формы подтверждения удаления карточки
-function handleDeleteElementFormSubmit(evt) {
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  //const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
-  api.deleteCard(deletePopup.dataset.deletedElement)
-    .then(() => {
-      document.getElementById(deletePopup.dataset.deletedElement).remove();
-      closePopup(deletePopup);
-    })
-    .catch((err) => {
-      console.error('Ошибка при удалении карточки.', err);
-    })
-    .finally(() => {
-      evt.submitter.textContent = 'Да'
-      deletePopup.dataset.deletedElement = '';
-    });
-}
-
-// обработчик формы изменения аватара
-function handleAvatarFormSubmit(evt) {
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  //const promisePatchUserAvatar = patchUserAvatar(avatarPopupLink.value)
-  api.patchUserAvatar(avatarPopupLink.value)
-    .then((result) => {
-      profileAvatar.src = result.avatar;
-      closePopup(avatarPopup);
-    })
-    .catch((err) => {
-      console.error('Ошибка при загрузке нового аватара.', err);
-    })
-    .finally(() => {
-      evt.submitter.textContent = 'Сохранить'
-      evt.target.reset();
-    });
-}
-
 // открытие окна изменения аватара
 avatarOpenBtn.addEventListener('click', () => {
-  openPopup(avatarPopup);
+  const avatarPopupWithFormInstance = new PopupWithForm('.popup-avatar', (evt) => {
+
+    evt.preventDefault();
+    evt.submitter.textContent = 'Сохранение...'
+    api.patchUserAvatar(avatarPopupLink.value)
+      .then((result) => {
+        profileAvatar.src = result.avatar;
+        avatarPopupWithFormInstance.close();
+      })
+      .catch((err) => {
+        console.error('Ошибка при загрузке нового аватара.', err);
+      })
+      .finally(() => {
+        evt.submitter.textContent = 'Сохранить'
+        evt.target.reset();
+      });
+  });
+  avatarPopupWithFormInstance.open();
 });
 
 // открытие окна редактирования профиля
 profileOpenBtn.addEventListener('click', () => {
-  openPopup(profilePopup);
+  const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt) => {
+    evt.preventDefault();
+    evt.submitter.textContent = 'Сохранение...'
+    api.patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
+      .then(() => {
+        profileName.textContent = profilePopupName.value;
+        profileSubtitle.textContent = profilePopupSubtitle.value;
+        profilePopupWithFormInstance.close();
+      })
+      .catch((err) => {
+        console.error('Ошибка при сохранении профиля.', err);
+      })
+      .finally(() => {
+        evt.submitter.textContent = 'Сохранить'
+      });
+  })
   profilePopupName.value = profileName.textContent;
   profilePopupSubtitle.value = profileSubtitle.textContent;
+  profilePopupWithFormInstance.open();
 });
 
 // открытие окна нового элемента
 newElementBtn.addEventListener('click', () => {
-  openPopup(elementPopup);
+  const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
+    evt.preventDefault();
+    evt.submitter.textContent = 'Сохранение...'
+    api.postCard(elementPopupName.value, elementPopupLink.value)
+      .then((result) => {
+        const newCard = new Card({data: result}, userId, cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
+          cartObjTemplate.handlePutLike, cartObjTemplate.handleDeleteLikecartObjTemplate, '.element-template');
+        const newCardElement = newCard.generate();
+        cardsList.addItem(newCardElement);
+        newElementPopupInstance.close();
+      })
+      .catch((err) => {
+        console.error('Ошибка при сохранении профиля.', err);
+      })
+      .finally(() => {
+        evt.submitter.textContent = 'Создать'
+        evt.target.reset();
+      });
+  })
+  newElementPopupInstance.open();
 });
-
-// событие на кнопки закрытия на всех модальных окнах
-modalCloseBtns.forEach((btn) => {
-  btn.addEventListener('click', (evt) => {
-    closePopup(evt.target.closest('.popup'));
-  });
-})
-
-// события отправки форм
-profileFormElement.addEventListener('submit', handleProfileFormSubmit);
-elementFormElement.addEventListener('submit', handleElementFormSubmit);
-deleteFormElement.addEventListener('submit', handleDeleteElementFormSubmit);
-avatarFormElement.addEventListener('submit', handleAvatarFormSubmit);
 
 const validationProps = {
   formSelector: '.form',
