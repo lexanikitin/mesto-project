@@ -5,6 +5,7 @@ import Api from "./Api";
 import PopupWithImage from "./PopupWithImage";
 import PopupWithForm from "./PopupWithForm";
 import FormValidator from "./FormValidator";
+import UserInfo from "./UserInfo";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -31,7 +32,6 @@ const elementPopupLink = document.querySelector('#element-link');
 const newElementBtn = document.querySelector('.profile__add-button');
 
 // храним ID пользователя (позже стоит убрать в куки?)
-let userId;
 const config = {
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-15',
   headers: {
@@ -66,41 +66,52 @@ const cartObjTemplate = {
     });
     confirmPopup.open();
   },
-  handlePutLike: (cardId) => {
-    api.putLike(cardId)
-      .then((result) => {
-        document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
-        card.redrawLikeCounter(cardId, result.likes.length)
-      })
-      .catch((err) => {
-        console.error('Ошибка при сохранении лайка на сервере.', err);
-      })
-  },
-  handleDeleteLike: (cardId) => {
-    api.deleteLike(cardId)
-      .then((result) => {
-        document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
-        card.redrawLikeCounter(cardId, result.likes.length)
-      })
-      .catch((err) => {
-        console.error('Ошибка при удалении лайка на сервере.', err);
-      })
-  }
 }
 
 const api = new Api(config);
+const userSelectors = {
+  name: '.profile__name',
+  about: '.profile__subtitle',
+  avatar: '.profile__avatar',
+  getterUserInfo: () => {
+    return api.getUserInfo();
+  },
+  setterUserInfo: (name, about) => {
+    return api.patchUserInfo(name, about);
+  }
+}
+
+const userInfoInstance = new UserInfo({data: userSelectors})
+userInfoInstance.getUserInfo();
+
 Promise.all([api.getUserInfo(), api.getCards()])
   .then((result) => {
-    profileName.textContent = result[0].name;
-    profileSubtitle.textContent = result[0].about;
-    profileAvatar.src = result[0].avatar;
-    userId = result[0]._id;
     const items = result[1];
     cardsList = new Section({
       items,
       renderer: (item) => {
-        const card = new Card({data: item}, userId, cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
-          cartObjTemplate.handlePutLike, cartObjTemplate.handleDeleteLikecartObjTemplate, '.element-template');
+        const card = new Card({data: item}, localStorage.getItem('userId'), cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
+          (cardId) => {
+            api.putLike(cardId)
+              .then((result) => {
+                document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
+                card.redrawLikeCounter(cardId, result.likes.length)
+              })
+              .catch((err) => {
+                console.error('Ошибка при сохранении лайка на сервере.', err);
+              })
+          },
+          (cardId) => {
+            api.deleteLike(cardId)
+              .then((result) => {
+                document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
+                card.redrawLikeCounter(cardId, result.likes.length)
+              })
+              .catch((err) => {
+                console.error('Ошибка при удалении лайка на сервере.', err);
+              })
+          },
+          '.element-template');
         const cardElement = card.generate();
         cardsList.addItem(cardElement);
       },
@@ -140,18 +151,11 @@ profileOpenBtn.addEventListener('click', () => {
   const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt) => {
     evt.preventDefault();
     evt.submitter.textContent = 'Сохранение...'
-    api.patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
-      .then(() => {
-        profileName.textContent = profilePopupName.value;
-        profileSubtitle.textContent = profilePopupSubtitle.value;
-        profilePopupWithFormInstance.close();
-      })
-      .catch((err) => {
-        console.error('Ошибка при сохранении профиля.', err);
-      })
-      .finally(() => {
-        evt.submitter.textContent = 'Сохранить'
-      });
+    userInfoInstance.setUserInfo(profilePopupName.value, profilePopupSubtitle.value);
+    evt.submitter.textContent = 'Сохранить'
+    profilePopupWithFormInstance.close();
+
+
   })
   profilePopupName.value = profileName.textContent;
   profilePopupSubtitle.value = profileSubtitle.textContent;
@@ -165,10 +169,30 @@ newElementBtn.addEventListener('click', () => {
     evt.submitter.textContent = 'Сохранение...'
     api.postCard(elementPopupName.value, elementPopupLink.value)
       .then((result) => {
-        const newCard = new Card({data: result}, userId, cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
-          cartObjTemplate.handlePutLike, cartObjTemplate.handleDeleteLikecartObjTemplate, '.element-template');
-        const newCardElement = newCard.generate();
-        cardsList.addItem(newCardElement);
+        const card = new Card({data: result}, localStorage.getItem('userId'), cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
+          (cardId) => {
+            api.putLike(cardId)
+              .then((result) => {
+                document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
+                card.redrawLikeCounter(cardId, result.likes.length)
+              })
+              .catch((err) => {
+                console.error('Ошибка при сохранении лайка на сервере.', err);
+              })
+          },
+          (cardId) => {
+            api.deleteLike(cardId)
+              .then((result) => {
+                document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
+                card.redrawLikeCounter(cardId, result.likes.length)
+              })
+              .catch((err) => {
+                console.error('Ошибка при удалении лайка на сервере.', err);
+              })
+          },
+          '.element-template');
+        const cardElement = card.generate();
+        cardsList.addItem(cardElement);
         newElementPopupInstance.close();
       })
       .catch((err) => {
