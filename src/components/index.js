@@ -192,7 +192,7 @@ newElementBtn.addEventListener('click', () => {
           },
           '.element-template');
         const cardElement = card.generate();
-        cardsList.addItem(cardElement);
+        cardsList.addNewItem(cardElement);
         newElementPopupInstance.close();
       })
       .catch((err) => {
