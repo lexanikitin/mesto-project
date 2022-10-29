@@ -80,6 +80,39 @@ const userSelectors = {
     return api.patchUserInfo(name, about);
   }
 }
+  /*
+  создание экземпляров класса PopupWithForm
+  */
+const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt) => {
+  const profileData = profilePopupWithFormInstance.getInputValues();
+  //TODO проверить getInputValues. Почему он приватный? Корректно использую?
+  evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
+  userInfoInstance.setUserInfo(profileData[0], profileData[1]);
+  evt.submitter.textContent = 'Сохранить'
+  profilePopupWithFormInstance.close();
+});
+
+const avatarPopupWithFormInstance = new PopupWithForm('.popup-avatar', (evt) => {
+  const avatarData = avatarPopupWithFormInstance.getInputValues();
+  evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
+  api.patchUserAvatar(avatarData[0])
+    .then((result) => {
+      profileAvatar.src = result.avatar;
+      avatarPopupWithFormInstance.close();
+    })
+    .catch((err) => {
+      console.error('Ошибка при загрузке нового аватара.', err);
+    })
+    .finally(() => {
+      evt.submitter.textContent = 'Сохранить'
+      evt.target.reset();
+    });
+});
+
+  /*
+  */
 
 const userInfoInstance = new UserInfo({data: userSelectors})
 userInfoInstance.getUserInfo();
@@ -126,37 +159,11 @@ Promise.all([api.getUserInfo(), api.getCards()])
 
 // открытие окна изменения аватара
 avatarOpenBtn.addEventListener('click', () => {
-  const avatarPopupWithFormInstance = new PopupWithForm('.popup-avatar', (evt) => {
-
-    evt.preventDefault();
-    evt.submitter.textContent = 'Сохранение...'
-    api.patchUserAvatar(avatarPopupLink.value)
-      .then((result) => {
-        profileAvatar.src = result.avatar;
-        avatarPopupWithFormInstance.close();
-      })
-      .catch((err) => {
-        console.error('Ошибка при загрузке нового аватара.', err);
-      })
-      .finally(() => {
-        evt.submitter.textContent = 'Сохранить'
-        evt.target.reset();
-      });
-  });
   avatarPopupWithFormInstance.open();
 });
 
 // открытие окна редактирования профиля
 profileOpenBtn.addEventListener('click', () => {
-  const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt) => {
-    evt.preventDefault();
-    evt.submitter.textContent = 'Сохранение...'
-    userInfoInstance.setUserInfo(profilePopupName.value, profilePopupSubtitle.value);
-    evt.submitter.textContent = 'Сохранить'
-    profilePopupWithFormInstance.close();
-
-
-  })
   profilePopupName.value = profileName.textContent;
   profilePopupSubtitle.value = profileSubtitle.textContent;
   profilePopupWithFormInstance.open();
@@ -165,9 +172,11 @@ profileOpenBtn.addEventListener('click', () => {
 // открытие окна нового элемента
 newElementBtn.addEventListener('click', () => {
   const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
+    const newCardData = newElementPopupInstance.getInputValues();
     evt.preventDefault();
     evt.submitter.textContent = 'Сохранение...'
-    api.postCard(elementPopupName.value, elementPopupLink.value)
+    //TODO проверить getInputValues. Почему он приватный? Корректно использую?
+    api.postCard(newCardData[0], newCardData[1])
       .then((result) => {
         const card = new Card({data: result}, localStorage.getItem('userId'), cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
           (cardId) => {
