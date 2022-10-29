@@ -47,6 +47,7 @@ const cartObjTemplate = {
   handleDeleteCard: (evt) => {
     //TODO создать объект popupImageDelete
     const cardId = evt.target.closest('.element').id;
+    //TODO создать экземпляр класса PopupWithDelete
     const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
       evt.preventDefault();
       evt.submitter.textContent = 'Сохранение...'
@@ -102,15 +103,57 @@ const avatarPopupWithFormInstance = new PopupWithForm('.popup-avatar', (evt) => 
     .then((result) => {
       profileAvatar.src = result.avatar;
       avatarPopupWithFormInstance.close();
+      evt.target.reset();
     })
     .catch((err) => {
       console.error('Ошибка при загрузке нового аватара.', err);
     })
     .finally(() => {
       evt.submitter.textContent = 'Сохранить'
-      evt.target.reset();
     });
 });
+
+const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
+  const newCardData = newElementPopupInstance.getInputValues();
+  evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
+  //TODO проверить getInputValues. Почему он приватный? Корректно использую?
+  api.postCard(newCardData[0], newCardData[1])
+    .then((result) => {
+      const card = new Card({data: result}, localStorage.getItem('userId'), cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
+        (cardId) => {
+          api.putLike(cardId)
+            .then((result) => {
+              document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
+              card.redrawLikeCounter(cardId, result.likes.length)
+            })
+            .catch((err) => {
+              console.error('Ошибка при сохранении лайка на сервере.', err);
+            })
+        },
+        (cardId) => {
+          api.deleteLike(cardId)
+            .then((result) => {
+              document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
+              card.redrawLikeCounter(cardId, result.likes.length)
+            })
+            .catch((err) => {
+              console.error('Ошибка при удалении лайка на сервере.', err);
+            })
+        },
+        '.element-template');
+      const cardElement = card.generate();
+      cardsList.addNewItem(cardElement);
+      newElementPopupInstance.close();
+      evt.target.reset();
+    })
+    .catch((err) => {
+      console.error('Ошибка при сохранении профиля.', err);
+    })
+    .finally(() => {
+      evt.submitter.textContent = 'Создать'
+    });
+})
 
   /*
   */
@@ -172,47 +215,6 @@ profileOpenBtn.addEventListener('click', () => {
 
 // открытие окна нового элемента
 newElementBtn.addEventListener('click', () => {
-  const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
-    const newCardData = newElementPopupInstance.getInputValues();
-    evt.preventDefault();
-    evt.submitter.textContent = 'Сохранение...'
-    //TODO проверить getInputValues. Почему он приватный? Корректно использую?
-    api.postCard(newCardData[0], newCardData[1])
-      .then((result) => {
-        const card = new Card({data: result}, localStorage.getItem('userId'), cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
-          (cardId) => {
-            api.putLike(cardId)
-              .then((result) => {
-                document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
-                card.redrawLikeCounter(cardId, result.likes.length)
-              })
-              .catch((err) => {
-                console.error('Ошибка при сохранении лайка на сервере.', err);
-              })
-          },
-          (cardId) => {
-            api.deleteLike(cardId)
-              .then((result) => {
-                document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
-                card.redrawLikeCounter(cardId, result.likes.length)
-              })
-              .catch((err) => {
-                console.error('Ошибка при удалении лайка на сервере.', err);
-              })
-          },
-          '.element-template');
-        const cardElement = card.generate();
-        cardsList.addNewItem(cardElement);
-        newElementPopupInstance.close();
-      })
-      .catch((err) => {
-        console.error('Ошибка при сохранении профиля.', err);
-      })
-      .finally(() => {
-        evt.submitter.textContent = 'Создать'
-        evt.target.reset();
-      });
-  })
   newElementPopupInstance.open();
 });
 
