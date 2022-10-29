@@ -124,7 +124,6 @@ const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
         (cardId) => {
           api.putLike(cardId)
             .then((result) => {
-              document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
               card.redrawLikeCounter(cardId, result.likes.length)
             })
             .catch((err) => {
@@ -134,7 +133,6 @@ const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
         (cardId) => {
           api.deleteLike(cardId)
             .then((result) => {
-              document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
               card.redrawLikeCounter(cardId, result.likes.length)
             })
             .catch((err) => {
@@ -171,8 +169,7 @@ Promise.all([api.getUserInfo(), api.getCards()])
           (cardId) => {
             api.putLike(cardId)
               .then((result) => {
-                document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
-                card.redrawLikeCounter(cardId, result.likes.length)
+               card.redrawLikeCounter(cardId, result.likes.length)
               })
               .catch((err) => {
                 console.error('Ошибка при сохранении лайка на сервере.', err);
@@ -181,7 +178,6 @@ Promise.all([api.getUserInfo(), api.getCards()])
           (cardId) => {
             api.deleteLike(cardId)
               .then((result) => {
-                document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
                 card.redrawLikeCounter(cardId, result.likes.length)
               })
               .catch((err) => {

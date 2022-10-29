@@ -26,9 +26,10 @@ export default class Card {
   _toggleLike(evt) {
     if(evt.target.classList.contains('element__like-btn_active')) {
       this._handleDeleteLike(this._id);
-
+      evt.target.classList.remove('element__like-btn_active')
     } else {
       this._handlePutLike(this._id);
+      evt.target.classList.add('element__like-btn_active')
     }
   }
 
