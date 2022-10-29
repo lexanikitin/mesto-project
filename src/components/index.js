@@ -42,8 +42,8 @@ const config = {
 let cardsList;
 const cartObjTemplate = {
   handleCardClick: (name, link) => {
-    const imagePopup = new PopupWithImage('.popup-image', name, link);
-    imagePopup.open();
+    const imagePopup = new PopupWithImage('.popup-image');
+    imagePopup.open(name, link);
   },
   handleDeleteCard: (evt) => {
     //TODO создать объект popupImageDelete
