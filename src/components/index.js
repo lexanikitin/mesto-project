@@ -42,7 +42,6 @@ const config = {
 let cardsList;
 const cartObjTemplate = {
   handleCardClick: (name, link) => {
-    const imagePopup = new PopupWithImage('.popup-image');
     imagePopup.open(name, link);
   },
   handleDeleteCard: (evt) => {
@@ -81,8 +80,10 @@ const userSelectors = {
   }
 }
   /*
-  создание экземпляров класса PopupWithForm
+  создание экземпляров класса PopupWith...
   */
+const imagePopup = new PopupWithImage('.popup-image');
+
 const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt) => {
   const profileData = profilePopupWithFormInstance.getInputValues();
   //TODO проверить getInputValues. Почему он приватный? Корректно использую?
