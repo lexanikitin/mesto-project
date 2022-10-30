@@ -39,7 +39,7 @@ export default class Card {
     });
     if (this._ownerId === this._userId) {
       this._elementDelete.addEventListener('click', (evt) => {
-        this._handleDeleteCard(evt);
+        this._handleDeleteCard(this._id, this);
       });
     } else {
       this._elementDelete.remove();
@@ -50,6 +50,9 @@ export default class Card {
 
   }
 
+  removeCardElement(cardId){
+    document.getElementById(cardId).remove();
+  }
   generate() {
     this._element = this._getElement();
     this._elementImage = this._element.querySelector('.element__image');

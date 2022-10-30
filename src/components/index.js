@@ -62,16 +62,15 @@ function getCardInstance(data, selector) {
     (name, link) => {
       imagePopup.open(name, link);
     },
-    (evt) => {
+    (cardId, cardInstance) => {
       //TODO создать объект popupImageDelete
-      const cardId = evt.target.closest('.element').id;
       //TODO создать экземпляр класса PopupWithDelete
       const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
         evt.preventDefault();
         evt.submitter.textContent = 'Сохранение...'
         api.deleteCard(cardId)
           .then((res) => {
-            document.getElementById(cardId).remove();
+            cardInstance.removeCardElement(cardId);
             confirmPopup.close();
           })
           .catch((err) => {
