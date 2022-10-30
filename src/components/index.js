@@ -6,6 +6,7 @@ import PopupWithImage from "./PopupWithImage";
 import PopupWithForm from "./PopupWithForm";
 import FormValidator from "./FormValidator";
 import UserInfo from "./UserInfo";
+import PopupDelete from "./PopupDelete";
 
 const profileName = document.querySelector('.profile__name');
 const profileSubtitle = document.querySelector('.profile__subtitle');
@@ -63,25 +64,7 @@ function getCardInstance(data, selector) {
       imagePopup.open(name, link);
     },
     (cardId, cardInstance) => {
-      //TODO создать объект popupImageDelete
-      //TODO создать экземпляр класса PopupWithDelete
-      const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
-        evt.preventDefault();
-        evt.submitter.textContent = 'Сохранение...'
-        api.deleteCard(cardId)
-          .then((res) => {
-            cardInstance.removeCardElement(cardId);
-            confirmPopup.close();
-          })
-          .catch((err) => {
-            console.error('Ошибка при удалении карточки.', err);
-          })
-          .finally(() => {
-            evt.submitter.textContent = 'Да'
-            deletePopup.dataset.deletedElement = '';
-          });
-      });
-      confirmPopup.open();
+      confirmPopup.open(cardId, cardInstance);
     },
     (cardId) => {
       api.putLike(cardId)
@@ -109,6 +92,23 @@ function getCardInstance(data, selector) {
 создание экземпляров класса PopupWith...
 */
 const imagePopup = new PopupWithImage('.popup-image');
+
+const confirmPopup = new PopupDelete('.popup-delete', (evt, cardId, cardInstance) => {
+  evt.preventDefault();
+  evt.submitter.textContent = 'Сохранение...'
+  api.deleteCard(cardId)
+    .then((res) => {
+      cardInstance.removeCardElement(cardId);
+      confirmPopup.close();
+    })
+    .catch((err) => {
+      console.error('Ошибка при удалении карточки.', err);
+    })
+    .finally(() => {
+      evt.submitter.textContent = 'Да'
+      deletePopup.dataset.deletedElement = '';
+    });
+});
 
 const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt) => {
   const profileData = profilePopupWithFormInstance.getInputValues();
