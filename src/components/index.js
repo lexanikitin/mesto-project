@@ -14,22 +14,13 @@ const profileOpenBtn = document.querySelector('.profile__edit-button');
 const avatarOpenBtn = document.querySelector('.profile__avatar-block');
 const avatarPopup = document.querySelector('.popup-avatar');
 const avatarFormElement = avatarPopup.querySelector('.form');
-const avatarPopupLink = document.querySelector('#avatar-link');
-
 const profilePopup = document.querySelector('.popup-profile');
 const profilePopupName = document.querySelector('#name');
 const profilePopupSubtitle = document.querySelector('#subtitle');
 const profileFormElement = profilePopup.querySelector('.form');
-const profileAvatar = document.querySelector('.profile__avatar');
-
 const deletePopup = document.querySelector('.popup-delete');
-const deleteFormElement = deletePopup.querySelector('.form');
-
 const elementPopup = document.querySelector('.popup-element');
 const elementFormElement = elementPopup.querySelector('.form');
-const elementPopupName = document.querySelector('#element-name');
-const elementPopupLink = document.querySelector('#element-link');
-
 const newElementBtn = document.querySelector('.profile__add-button');
 
 // храним ID пользователя (позже стоит убрать в куки?)
@@ -40,10 +31,10 @@ const config = {
     'Content-Type': 'application/json'
   }
 }
+
 let cardsList;
 
 const api = new Api(config);
-
 
 // функция генерации экземпляра класса Card
 function getCardInstance(data, selector) {
@@ -146,8 +137,6 @@ const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
     });
 })
 
-/*
-*/
 const userSelectors = {
   name: '.profile__name',
   about: '.profile__subtitle',
@@ -174,13 +163,11 @@ const userSelectors = {
       .catch((err) => {
         console.error('Ошибка при сохранении профиля.', err);
       })
-      .finally(() => {
-      });
   }
 }
+
 const userInfoInstance = new UserInfo({data: userSelectors});
 userInfoInstance.getUserInfo();
-
 api.getCards()
   .then((result) => {
     const items = result;
