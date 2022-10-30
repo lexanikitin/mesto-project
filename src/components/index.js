@@ -116,7 +116,7 @@ const avatarPopupWithFormInstance = new PopupWithForm('.popup-avatar', (evt) => 
   evt.submitter.textContent = 'Сохранение...'
   api.patchUserAvatar(avatarData[0])
     .then((result) => {
-      profileAvatar.src = result.avatar;
+      userInfoInstance.setNewUserAvatar(result.avatar);
       avatarPopupWithFormInstance.close();
       evt.target.reset();
     })

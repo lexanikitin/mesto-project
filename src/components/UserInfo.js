@@ -14,4 +14,8 @@ export default class UserInfo {
   setUserInfo(name, about) {
     this._setUserInfoHandler(event, name, about, this._nameSelector, this._aboutSelector);
   }
+
+  setNewUserAvatar(link){
+    document.querySelector(this._avatarSelector).src = link;
+  }
 }
