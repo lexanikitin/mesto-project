@@ -40,33 +40,6 @@ const config = {
   }
 }
 let cardsList;
-const cartObjTemplate = {
-  handleCardClick: (name, link) => {
-    imagePopup.open(name, link);
-  },
-  handleDeleteCard: (evt) => {
-    //TODO создать объект popupImageDelete
-    const cardId = evt.target.closest('.element').id;
-    //TODO создать экземпляр класса PopupWithDelete
-    const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
-      evt.preventDefault();
-      evt.submitter.textContent = 'Сохранение...'
-      api.deleteCard(cardId)
-        .then((res) => {
-          document.getElementById(cardId).remove();
-          confirmPopup.close();
-        })
-        .catch((err) => {
-          console.error('Ошибка при удалении карточки.', err);
-        })
-        .finally(() => {
-          evt.submitter.textContent = 'Да'
-          deletePopup.dataset.deletedElement = '';
-        });
-    });
-    confirmPopup.open();
-  },
-}
 
 const api = new Api(config);
 const userSelectors = {
@@ -80,9 +53,62 @@ const userSelectors = {
     return api.patchUserInfo(name, about);
   }
 }
-  /*
-  создание экземпляров класса PopupWith...
-  */
+
+// функция генерации экземпляра класса Card
+function getCardInstance(data, selector) {
+  const card = new Card(
+    {data: data},
+    localStorage.getItem('userId'),
+    (name, link) => {
+      imagePopup.open(name, link);
+    },
+    (evt) => {
+      //TODO создать объект popupImageDelete
+      const cardId = evt.target.closest('.element').id;
+      //TODO создать экземпляр класса PopupWithDelete
+      const confirmPopup = new PopupWithForm('.popup-delete', (evt) => {
+        evt.preventDefault();
+        evt.submitter.textContent = 'Сохранение...'
+        api.deleteCard(cardId)
+          .then((res) => {
+            document.getElementById(cardId).remove();
+            confirmPopup.close();
+          })
+          .catch((err) => {
+            console.error('Ошибка при удалении карточки.', err);
+          })
+          .finally(() => {
+            evt.submitter.textContent = 'Да'
+            deletePopup.dataset.deletedElement = '';
+          });
+      });
+      confirmPopup.open();
+    },
+    (cardId) => {
+      api.putLike(cardId)
+        .then((result) => {
+          card.redrawLikeCounter(cardId, result.likes.length)
+        })
+        .catch((err) => {
+          console.error('Ошибка при сохранении лайка на сервере.', err);
+        })
+    },
+    (cardId) => {
+      api.deleteLike(cardId)
+        .then((result) => {
+          card.redrawLikeCounter(cardId, result.likes.length)
+        })
+        .catch((err) => {
+          console.error('Ошибка при удалении лайка на сервере.', err);
+        })
+    },
+    selector);
+  return card.generate();
+}
+
+/*
+создание экземпляров класса PopupWith...
+*/
 const imagePopup = new PopupWithImage('.popup-image');
 
 const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt) => {
@@ -120,28 +146,7 @@ const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
   //TODO проверить getInputValues. Почему он приватный? Корректно использую?
   api.postCard(newCardData[0], newCardData[1])
     .then((result) => {
-      const card = new Card({data: result}, localStorage.getItem('userId'), cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
-        (cardId) => {
-          api.putLike(cardId)
-            .then((result) => {
-              card.redrawLikeCounter(cardId, result.likes.length)
-            })
-            .catch((err) => {
-              console.error('Ошибка при сохранении лайка на сервере.', err);
-            })
-        },
-        (cardId) => {
-          api.deleteLike(cardId)
-            .then((result) => {
-              card.redrawLikeCounter(cardId, result.likes.length)
-            })
-            .catch((err) => {
-              console.error('Ошибка при удалении лайка на сервере.', err);
-            })
-        },
-        '.element-template');
-      const cardElement = card.generate();
-      cardsList.addNewItem(cardElement);
+      cardsList.addNewItem(getCardInstance(result, '.element-template'));
       newElementPopupInstance.close();
       evt.target.reset();
     })
@@ -153,8 +158,8 @@ const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
     });
 })
 
-  /*
-  */
+/*
+*/
 
 const userInfoInstance = new UserInfo({data: userSelectors})
 userInfoInstance.getUserInfo();
@@ -165,28 +170,7 @@ Promise.all([api.getUserInfo(), api.getCards()])
     cardsList = new Section({
       items,
       renderer: (item) => {
-        const card = new Card({data: item}, localStorage.getItem('userId'), cartObjTemplate.handleCardClick, cartObjTemplate.handleDeleteCard,
-          (cardId) => {
-            api.putLike(cardId)
-              .then((result) => {
-               card.redrawLikeCounter(cardId, result.likes.length)
-              })
-              .catch((err) => {
-                console.error('Ошибка при сохранении лайка на сервере.', err);
-              })
-          },
-          (cardId) => {
-            api.deleteLike(cardId)
-              .then((result) => {
-                card.redrawLikeCounter(cardId, result.likes.length)
-              })
-              .catch((err) => {
-                console.error('Ошибка при удалении лайка на сервере.', err);
-              })
-          },
-          '.element-template');
-        const cardElement = card.generate();
-        cardsList.addItem(cardElement);
+        cardsList.addItem(getCardInstance(item, '.element-template'));
       },
     }, '.elements');
     // отрисовка карточек
