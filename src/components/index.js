@@ -43,17 +43,7 @@ const config = {
 let cardsList;
 
 const api = new Api(config);
-const userSelectors = {
-  name: '.profile__name',
-  about: '.profile__subtitle',
-  avatar: '.profile__avatar',
-  getterUserInfo: () => {
-    return api.getUserInfo();
-  },
-  setterUserInfo: (name, about) => {
-    return api.patchUserInfo(name, about);
-  }
-}
+
 
 // функция генерации экземпляра класса Card
 function getCardInstance(data, selector) {
@@ -111,10 +101,10 @@ const confirmPopup = new PopupDelete('.popup-delete', (evt, cardId, cardInstance
 });
 
 const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt) => {
-  const profileData = profilePopupWithFormInstance.getInputValues();
-  //TODO проверить getInputValues. Почему он приватный? Корректно использую?
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
+  const profileData = profilePopupWithFormInstance.getInputValues();
+  //TODO проверить getInputValues. Почему он приватный? Корректно использую?
   userInfoInstance.setUserInfo(profileData[0], profileData[1]);
   evt.submitter.textContent = 'Сохранить'
   profilePopupWithFormInstance.close();
@@ -142,7 +132,6 @@ const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
   const newCardData = newElementPopupInstance.getInputValues();
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
-  //TODO проверить getInputValues. Почему он приватный? Корректно использую?
   api.postCard(newCardData[0], newCardData[1])
     .then((result) => {
       cardsList.addNewItem(getCardInstance(result, '.element-template'));
@@ -159,13 +148,42 @@ const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
 
 /*
 */
-
-const userInfoInstance = new UserInfo({data: userSelectors})
+const userSelectors = {
+  name: '.profile__name',
+  about: '.profile__subtitle',
+  avatar: '.profile__avatar',
+  getUserInfoHandler: (nameSelector, aboutSelector, avatarSelector) => {
+    api.getUserInfo()
+      .then((res) => {
+        document.querySelector(nameSelector).textContent = res.name;
+        document.querySelector(aboutSelector).textContent = res.about;
+        document.querySelector(avatarSelector).src = res.avatar;
+        localStorage.setItem('userId', res._id);
+      })
+      .catch((err) => {
+        console.error('Ошибка при загрузке данных с сервера.', err);
+      });
+  },
+  setUserInfoHandler: (evt, name, about, nameSelector, aboutSelector) => {
+    api.patchUserInfo(name, about)
+      .then((res) => {
+        document.querySelector(nameSelector).textContent = res.name;
+        document.querySelector(aboutSelector).textContent = res.about;
+        evt.target.reset();
+      })
+      .catch((err) => {
+        console.error('Ошибка при сохранении профиля.', err);
+      })
+      .finally(() => {
+      });
+  }
+}
+const userInfoInstance = new UserInfo({data: userSelectors});
 userInfoInstance.getUserInfo();
 
-Promise.all([api.getUserInfo(), api.getCards()])
+api.getCards()
   .then((result) => {
-    const items = result[1];
+    const items = result;
     cardsList = new Section({
       items,
       renderer: (item) => {

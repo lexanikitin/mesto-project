@@ -3,33 +3,15 @@ export default class UserInfo {
     this._nameSelector = data.name;
     this._aboutSelector = data.about;
     this._avatarSelector = data.avatar;
-    this._getterUserInfo = data.getterUserInfo;
-    this._setterUserInfo = data.setterUserInfo;
+    this._getUserInfoHandler = data.getUserInfoHandler;
+    this._setUserInfoHandler = data.setUserInfoHandler;
   }
 
   getUserInfo() {
-    this._getterUserInfo()
-      .then((res) => {
-        document.querySelector(this._nameSelector).textContent = res.name;
-        document.querySelector(this._aboutSelector).textContent = res.about;
-        document.querySelector(this._avatarSelector).src = res.avatar;
-        localStorage.setItem('userId', res._id);
-      })
-      .catch((err) => {
-        console.error('Ошибка при загрузке данных с сервера.', err);
-      });
+    this._getUserInfoHandler(this._nameSelector, this._aboutSelector, this._avatarSelector);
   }
 
   setUserInfo(name, about) {
-    this._setterUserInfo(name, about)
-      .then((res) => {
-        document.querySelector(this._nameSelector).textContent = res.name;
-        document.querySelector(this._aboutSelector).textContent = res.about;
-      })
-      .catch((err) => {
-        console.error('Ошибка при сохранении профиля.', err);
-      })
-      .finally(() => {
-      });
+    this._setUserInfoHandler(event, name, about, this._nameSelector, this._aboutSelector);
   }
 }
