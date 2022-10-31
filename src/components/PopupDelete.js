@@ -3,7 +3,9 @@ import Popup from "./Popup";
 export default class PopupDelete extends Popup {
   constructor(selector, submitHandler) {
     super(selector);
-    this._submitHandler = submitHandler;
+    this._submitHandler = () => {
+      submitHandler(event, this._cardId, this._cardInstance);
+    }
     this._formElement = this._popupElement.querySelector('form');
   }
 
@@ -15,9 +17,7 @@ export default class PopupDelete extends Popup {
 
   setEventListeners() {
     super.setEventListeners();
-    this._formElement.addEventListener('submit', () => {
-      this._submitHandler(event, this._cardId, this._cardInstance)
-    })
+    this._formElement.addEventListener('submit', this._submitHandler)
   }
 
   close() {
