@@ -91,21 +91,14 @@ const confirmPopup = new PopupDelete('.popup-delete', (evt, cardId, cardInstance
     });
 });
 
-const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt) => {
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  const profileData = profilePopupWithFormInstance.getInputValues();
-  //TODO проверить getInputValues. Почему он приватный? Корректно использую?
-  userInfoInstance.setUserInfo(profileData[0], profileData[1]);
+const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt, inputValues) => {
+  userInfoInstance.setUserInfo(inputValues.name, inputValues.subtitle);
   evt.submitter.textContent = 'Сохранить'
   profilePopupWithFormInstance.close();
 });
 
-const avatarPopupWithFormInstance = new PopupWithForm('.popup-avatar', (evt) => {
-  const avatarData = avatarPopupWithFormInstance.getInputValues();
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  api.patchUserAvatar(avatarData[0])
+const avatarPopupWithFormInstance = new PopupWithForm('.popup-avatar', (evt, inputValues) => {
+  api.patchUserAvatar(inputValues['avatar-link'])
     .then((result) => {
       userInfoInstance.setNewUserAvatar(result.avatar);
       avatarPopupWithFormInstance.close();
@@ -119,11 +112,8 @@ const avatarPopupWithFormInstance = new PopupWithForm('.popup-avatar', (evt) => 
     });
 });
 
-const newElementPopupInstance = new PopupWithForm('.popup-element', (evt) => {
-  const newCardData = newElementPopupInstance.getInputValues();
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  api.postCard(newCardData[0], newCardData[1])
+const newElementPopupInstance = new PopupWithForm('.popup-element', (evt, inputValues) => {
+  api.postCard(inputValues['element-name'], inputValues['element-link'])
     .then((result) => {
       cardsList.addNewItem(getCardInstance(result, '.element-template'));
       newElementPopupInstance.close();
