@@ -1,21 +1,21 @@
 export default class UserInfo {
   constructor({data}) {
-    this._nameSelector = data.name;
-    this._aboutSelector = data.about;
-    this._avatarSelector = data.avatar;
+    this.nameSelector = data.name;
+    this.aboutSelector = data.about;
+    this.avatarSelector = data.avatar;
     this._getUserInfoHandler = data.getUserInfoHandler;
     this._setUserInfoHandler = data.setUserInfoHandler;
   }
 
   getUserInfo() {
-    this._getUserInfoHandler(this._nameSelector, this._aboutSelector, this._avatarSelector);
+    return this._getUserInfoHandler();
   }
 
   setUserInfo(name, about) {
-    this._setUserInfoHandler(event, name, about, this._nameSelector, this._aboutSelector);
+    this._setUserInfoHandler(event, name, about, this.nameSelector, this.aboutSelector);
   }
 
   setNewUserAvatar(link){
-    document.querySelector(this._avatarSelector).src = link;
+    document.querySelector(this.avatarSelector).src = link;
   }
 }

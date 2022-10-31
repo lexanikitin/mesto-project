@@ -123,17 +123,8 @@ const userSelectors = {
   name: '.profile__name',
   about: '.profile__subtitle',
   avatar: '.profile__avatar',
-  getUserInfoHandler: (nameSelector, aboutSelector, avatarSelector) => {
-    api.getUserInfo()
-      .then((res) => {
-        document.querySelector(nameSelector).textContent = res.name;
-        document.querySelector(aboutSelector).textContent = res.about;
-        document.querySelector(avatarSelector).src = res.avatar;
-        localStorage.setItem('userId', res._id);
-      })
-      .catch((err) => {
-        console.error('Ошибка при загрузке данных с сервера.', err);
-      });
+  getUserInfoHandler: () => {
+    return api.getUserInfo()
   },
   setUserInfoHandler: (evt, name, about, nameSelector, aboutSelector) => {
     api.patchUserInfo(name, about)
@@ -149,10 +140,9 @@ const userSelectors = {
 }
 
 const userInfoInstance = new UserInfo({data: userSelectors});
-userInfoInstance.getUserInfo();
-api.getCards()
+Promise.all([api.getCards(), userInfoInstance.getUserInfo()])
   .then((result) => {
-    const items = result;
+    const items = result[0];
     cardsList = new Section({
       items,
       renderer: (item) => {
@@ -162,6 +152,10 @@ api.getCards()
     // отрисовка карточек
     cardsList.renderItems();
 
+    document.querySelector(userInfoInstance.nameSelector).textContent = result[1].name;
+    document.querySelector(userInfoInstance.aboutSelector).textContent = result[1].about;
+    document.querySelector(userInfoInstance.avatarSelector).src = result[1].avatar;
+    localStorage.setItem('userId', result[1]._id);
   })
   .catch((err) => {
     console.error('Ошибка при загрузке данных с сервера.', err);
