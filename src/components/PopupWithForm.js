@@ -6,31 +6,42 @@ export default class PopupWithForm extends Popup {
     this._submitHandler = (evt) => {
       evt.preventDefault();
       evt.submitter.textContent = 'Сохранение...'
-      this._getInputValues();
-      submitHandler(evt, this.inputValues);
+      submitHandler(evt, this._getInputValues());
     }
     this._formElement = this._popupElement.querySelector('form');
-    this.inputValues = {
-      name: '',
-      subtitle: '',
-      'element-name': '',
-      'element-link': '',
-      'avatar-link': ''
-    }
+    this._inputFields = [
+      'name',
+      'subtitle',
+      'element-name',
+      'element-link',
+      'avatar-link'
+    ]
   }
 
   _getInputValues() {
-    Array.from(this._formElement.querySelectorAll('input')).map(element => this.inputValues[element.name] = element.value);
+    const inputValues = {};
+    Array.from(this._formElement.querySelectorAll('input')).map((element) => {
+        this._inputFields.forEach((field) => {
+            if (element.name === field) {
+              inputValues[element.name] = element.value;
+            }
+          }
+        )
+      })
+    return inputValues;
   }
 
-  setEventListeners() {
-    super.setEventListeners();
-    this._formElement.addEventListener('submit', this._submitHandler)
-  }
 
-  close() {
-    super.close();
-    this._formElement.removeEventListener('submit', this._submitHandler)
-    this._formElement.reset();
-  }
+setEventListeners()
+{
+  super.setEventListeners();
+  this._formElement.addEventListener('submit', this._submitHandler)
+}
+
+close()
+{
+  super.close();
+  this._formElement.removeEventListener('submit', this._submitHandler)
+  this._formElement.reset();
+}
 }
