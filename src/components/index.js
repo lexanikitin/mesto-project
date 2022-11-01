@@ -1,98 +1,78 @@
 import '../pages/index.css';
-import {openPopup, closePopup} from "./modal";
-import enableValidation from "./validate";
-import {prependElement, redrawLikeCounter} from "./card";
-import {getUserInfo, patchUserInfo, patchUserAvatar, getCards, postCard, deleteCard, putLike, deleteLike} from "./api";
+import Card from "./Card";
+import Section from "./Section";
+import Api from "./Api";
+import PopupWithImage from "./PopupWithImage";
+import PopupWithForm from "./PopupWithForm";
+import FormValidator from "./FormValidator";
+import UserInfo from "./UserInfo";
+import PopupDelete from "./PopupDelete";
+import {
+  profileName,
+  profileSubtitle,
+  profileOpenBtn,
+  avatarOpenBtn,
+  avatarPopup,
+  avatarFormElement,
+  profilePopup,
+  profilePopupName,
+  profilePopupSubtitle,
+  profileFormElement,
+  deletePopup,
+  elementPopup,
+  elementFormElement,
+  newElementBtn,
+  config,
+} from './variables';
 
-const profileName = document.querySelector('.profile__name');
-const profileSubtitle = document.querySelector('.profile__subtitle');
-const profileOpenBtn = document.querySelector('.profile__edit-button');
-const avatarOpenBtn = document.querySelector('.profile__avatar-block');
-const avatarPopup = document.querySelector('.popup-avatar');
-const avatarFormElement = avatarPopup.querySelector('.form');
-const avatarPopupLink = document.querySelector('#avatar-link');
+let cardsList;
+const api = new Api(config);
 
-const profilePopup = document.querySelector('.popup-profile');
-const profilePopupName = document.querySelector('#name');
-const profilePopupSubtitle = document.querySelector('#subtitle');
-const profileFormElement = profilePopup.querySelector('.form');
-const profileAvatar = document.querySelector('.profile__avatar');
-
-const deletePopup = document.querySelector('.popup-delete');
-const deleteFormElement = deletePopup.querySelector('.form');
-
-const modalCloseBtns = document.querySelectorAll('.popup__close');
-
-const elementPopup = document.querySelector('.popup-element');
-const elementFormElement = elementPopup.querySelector('.form');
-const elementPopupName = document.querySelector('#element-name');
-const elementPopupLink = document.querySelector('#element-link');
-
-const newElementBtn = document.querySelector('.profile__add-button');
-
-// храним ID пользователя (позже стоит убрать в куки?)
-let userId;
-
-Promise.all([getUserInfo(), getCards()])
-  .then((result)=>{
-    profileName.textContent = result[0].name;
-    profileSubtitle.textContent = result[0].about;
-    profileAvatar.src = result[0].avatar;
-    userId = result[0]._id;
-
-    result[1].forEach((card) => {
-      prependElement(card.name, card.link, card._id, card.likes, card.owner._id, userId);
-    })
-
-  })
-  .catch((err)=>{
-    console.error('Ошибка при загрузке данных с сервера.', err);
-  });
-
-// обработчик сохранения окна профиля
-function handleProfileFormSubmit(evt) {
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  const promisePatchUserInfo = patchUserInfo(profilePopupName.value, profilePopupSubtitle.value)
-    .then(() => {
-      profileName.textContent = profilePopupName.value;
-      profileSubtitle.textContent = profilePopupSubtitle.value;
-      closePopup(profilePopup);
-    })
-    .catch((err) => {
-      console.error('Ошибка при сохранении профиля.', err);
-    })
-    .finally(() => {
-      evt.submitter.textContent = 'Сохранить'
-    });
+// функция генерации экземпляра класса Card
+function getCardInstance(data, selector) {
+  const card = new Card(
+    {data: data},
+    localStorage.getItem('userId'),
+    (name, link) => {
+      imagePopup.open(name, link);
+    },
+    (cardId, cardInstance) => {
+      confirmPopup.open(cardId, cardInstance);
+    },
+    (cardId) => {
+      api.putLike(cardId)
+        .then((result) => {
+          card.redrawLikeCounter(cardId, result.likes.length)
+        })
+        .catch((err) => {
+          console.error('Ошибка при сохранении лайка на сервере.', err);
+        })
+    },
+    (cardId) => {
+      api.deleteLike(cardId)
+        .then((result) => {
+          card.redrawLikeCounter(cardId, result.likes.length)
+        })
+        .catch((err) => {
+          console.error('Ошибка при удалении лайка на сервере.', err);
+        })
+    },
+    selector);
+  return card.generate();
 }
 
-// обработчик сохранения формы нового элемента
-function handleElementFormSubmit(evt) {
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  const promisePostCard = postCard(elementPopupName.value, elementPopupLink.value)
-    .then((result) => {
-      prependElement(elementPopupName.value, elementPopupLink.value, result._id, [], result.owner._id, userId);
-      closePopup(elementPopup);
-    })
-    .catch((err) => {
-      console.error('Ошибка при сохранении профиля.', err);
-    })
-    .finally(() => {
-      evt.submitter.textContent = 'Создать'
-      evt.target.reset();
-    });
-}
+/*
+создание экземпляров класса PopupWith...
+*/
+const imagePopup = new PopupWithImage('.popup-image');
 
-// обработчик формы подтверждения удаления карточки
-function handleDeleteElementFormSubmit(evt){
+const confirmPopup = new PopupDelete('.popup-delete', (evt, cardId, cardInstance) => {
   evt.preventDefault();
   evt.submitter.textContent = 'Сохранение...'
-  const promiseDeleteCard = deleteCard(deletePopup.dataset.deletedElement)
-    .then(() => {
-      document.getElementById(deletePopup.dataset.deletedElement).remove();
-      closePopup(deletePopup);
+  api.deleteCard(cardId)
+    .then((res) => {
+      cardInstance.removeCardElement(cardId);
+      confirmPopup.close();
     })
     .catch((err) => {
       console.error('Ошибка при удалении карточки.', err);
@@ -101,85 +81,114 @@ function handleDeleteElementFormSubmit(evt){
       evt.submitter.textContent = 'Да'
       deletePopup.dataset.deletedElement = '';
     });
-}
+});
 
-// обработчик формы изменения аватара
-function handleAvatarFormSubmit(evt){
-  evt.preventDefault();
-  evt.submitter.textContent = 'Сохранение...'
-  const promisePatchUserAvatar = patchUserAvatar(avatarPopupLink.value)
+const profilePopupWithFormInstance = new PopupWithForm('.popup-profile', (evt, inputValues) => {
+  userInfoInstance.setUserInfo(inputValues.name, inputValues.subtitle);
+  evt.submitter.textContent = 'Сохранить'
+  profilePopupWithFormInstance.close();
+});
+
+const avatarPopupWithFormInstance = new PopupWithForm('.popup-avatar', (evt, inputValues) => {
+  api.patchUserAvatar(inputValues['avatar-link'])
     .then((result) => {
-      profileAvatar.src = result.avatar;
-      closePopup(avatarPopup);
+      userInfoInstance.setNewUserAvatar(result.avatar);
+      avatarPopupWithFormInstance.close();
+      evt.target.reset();
     })
     .catch((err) => {
       console.error('Ошибка при загрузке нового аватара.', err);
     })
     .finally(() => {
       evt.submitter.textContent = 'Сохранить'
-      evt.target.reset();
     });
-}
+});
 
-// обработчик постановки лайка с карточки
-export function handlePutLike(cardId){
-  const promisePutLike = putLike(cardId)
+const newElementPopupInstance = new PopupWithForm('.popup-element', (evt, inputValues) => {
+  api.postCard(inputValues['element-name'], inputValues['element-link'])
     .then((result) => {
-      document.getElementById(cardId).querySelector('.element__like-btn').classList.add('element__like-btn_active');
-      redrawLikeCounter(cardId, result.likes.length)
+      cardsList.addNewItem(getCardInstance(result, '.element-template'));
+      newElementPopupInstance.close();
+      evt.target.reset();
     })
     .catch((err) => {
-      console.error('Ошибка при сохранении лайка на сервере.', err);
+      console.error('Ошибка при сохранении профиля.', err);
     })
+    .finally(() => {
+      evt.submitter.textContent = 'Создать'
+    });
+})
+
+const userSelectors = {
+  name: '.profile__name',
+  about: '.profile__subtitle',
+  avatar: '.profile__avatar',
+  getUserInfoHandler: () => {
+    return api.getUserInfo()
+  },
+  setUserInfoHandler: (evt, name, about, nameSelector, aboutSelector) => {
+    api.patchUserInfo(name, about)
+      .then((res) => {
+        document.querySelector(nameSelector).textContent = res.name;
+        document.querySelector(aboutSelector).textContent = res.about;
+        evt.target.reset();
+      })
+      .catch((err) => {
+        console.error('Ошибка при сохранении профиля.', err);
+      })
+  }
 }
 
-// обработчик удаления лайка с карточки
-export function handleDeleteLike(cardId) {
-  const promiseDeleteLike = deleteLike(cardId)
-    .then((result) => {
-      document.getElementById(cardId).querySelector('.element__like-btn').classList.remove('element__like-btn_active');
-      redrawLikeCounter(cardId, result.likes.length)
-    })
-    .catch((err) => {
-      console.error('Ошибка при удалении лайка на сервере.', err);
-    })
-}
+const userInfoInstance = new UserInfo({data: userSelectors});
+Promise.all([api.getCards(), userInfoInstance.getUserInfo()])
+  .then((result) => {
+    const items = result[0];
+    cardsList = new Section({
+      items,
+      renderer: (item) => {
+        cardsList.addItem(getCardInstance(item, '.element-template'));
+      },
+    }, '.elements');
+    // отрисовка карточек
+    cardsList.renderItems();
+
+    document.querySelector(userInfoInstance.nameSelector).textContent = result[1].name;
+    document.querySelector(userInfoInstance.aboutSelector).textContent = result[1].about;
+    document.querySelector(userInfoInstance.avatarSelector).src = result[1].avatar;
+    localStorage.setItem('userId', result[1]._id);
+  })
+  .catch((err) => {
+    console.error('Ошибка при загрузке данных с сервера.', err);
+  });
 
 // открытие окна изменения аватара
-avatarOpenBtn.addEventListener('click', ()=>{
-  openPopup(avatarPopup);
+avatarOpenBtn.addEventListener('click', () => {
+  avatarPopupWithFormInstance.open();
 });
 
 // открытие окна редактирования профиля
 profileOpenBtn.addEventListener('click', () => {
-  openPopup(profilePopup);
   profilePopupName.value = profileName.textContent;
   profilePopupSubtitle.value = profileSubtitle.textContent;
+  profilePopupWithFormInstance.open();
 });
 
 // открытие окна нового элемента
 newElementBtn.addEventListener('click', () => {
-  openPopup(elementPopup);
+  newElementPopupInstance.open();
 });
 
-// событие на кнопки закрытия на всех модальных окнах
-modalCloseBtns.forEach((btn) => {
-  btn.addEventListener('click', (evt) => {
-    closePopup(evt.target.closest('.popup'));
-  });
-})
-
-// события отправки форм
-profileFormElement.addEventListener('submit', handleProfileFormSubmit);
-elementFormElement.addEventListener('submit', handleElementFormSubmit);
-deleteFormElement.addEventListener('submit', handleDeleteElementFormSubmit);
-avatarFormElement.addEventListener('submit', handleAvatarFormSubmit);
-
-enableValidation({
+const validationProps = {
   formSelector: '.form',
   inputSelector: '.form__input',
   submitButtonSelector: '.form__submit',
   inactiveButtonClass: 'form__submit_disabled',
   inputErrorClass: 'form__input_state_error',
   errorClass: 'form__error-message_visible'
-})
+};
+const validationProfileForm = new FormValidator({data: validationProps}, profileFormElement);
+validationProfileForm.enableValidation();
+const validationElementForm = new FormValidator({data: validationProps}, elementFormElement);
+validationElementForm.enableValidation();
+const validationAvatarForm = new FormValidator({data: validationProps}, avatarFormElement);
+validationAvatarForm.enableValidation();
